@@ -30,8 +30,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           cache: npm
-          node-version-file: services/website/package.json
-          cache-dependency-path: services/website/package-lock.json
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Install dependencies
@@ -43,7 +41,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: services/website/.vitepress/dist
+          path: .vitepress/dist
 
   deploy:
     environment:
