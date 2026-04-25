@@ -11,7 +11,7 @@ flowchart TB
 		Luxembourg
 	end
 
-	Internet --"Fibre 1 Gbit/s"--> Berlin((Berlin))
+	Internet --"FTTH 1 Gbit/s"--> Berlin((Berlin))
 
 	subgraph Maison
 		Berlin --"Ethernet 1 Gbit/s"--> Bruxelles
@@ -35,6 +35,11 @@ flowchart TB
 ### 🗼 Infrastructure
 
 **Plage d’adressage** : `192.168.0.1`–`192.168.0.20`
+
+> **DHCP et fonctionnement réseau :**
+>
+> - Tous les baux DHCP sont délivrés exclusivement par [Berlin](./inventaire.md#berlin), qui agit comme serveur DHCP principal.
+> - Les autres équipements (Budapest, Chisinau, Oslo, etc.) fonctionnent strictement en mode **pont transparent** (_bridge mode_, L2 only) : ils ne réalisent ni routage, ni NAT, ni aucun service réseau L3 (pas d’autre DHCP, pas de VLAN supplémentaire, pas de firewall). L’ensemble du LAN forme donc un unique segment de broadcast et un unique domaine de collision IP.
 
 | Nom                                  | Adresse IP                        | Description                | Adresse MAC       |
 | ------------------------------------ | --------------------------------- | -------------------------- | ----------------- |
