@@ -51,10 +51,11 @@ flowchart TB
 
 **Plage d’adressage** : `192.168.0.21`–`192.168.0.30`
 
-| Nom                                      | Adresse IP                          | Description          | Adresse MAC |
-| ---------------------------------------- | ----------------------------------- | -------------------- | ----------- |
-| [Bruxelles](./inventaire.md#bruxelles)   | [192.168.0.21](http://192.168.0.21) | Serveur TrueNAS      |             |
-| [Luxembourg](./inventaire.md#luxembourg) | [192.168.0.23](http://192.168.0.23) | Serveur Oracle Cloud |             |
+| Nom                                      | Adresse IP                          | Description                                                                      | Adresse MAC |
+| ---------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------- | ----------- |
+| [Bruxelles](./inventaire.md#bruxelles)   | [192.168.0.21](http://192.168.0.21) | Serveur TrueNAS                                                                  |             |
+| [Pristina](./inventaire.md#pristina)     | [192.168.0.22](http://192.168.0.22) | Serveur Debian de sauvegarde (virtualisé sur [Athènes](./inventaire.md#athenes)) |             |
+| [Luxembourg](./inventaire.md#luxembourg) | [192.168.0.23](http://192.168.0.23) | Serveur Oracle Cloud                                                             |             |
 
 ### 🎥 Caméras
 
