@@ -1,4 +1,4 @@
-# 🛡️📦 Politique de Sauvegarde et Archivage
+# 🛡️ Politique de sauvegarde
 
 ## 🌐 Schéma global
 
