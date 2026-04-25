@@ -47,6 +47,7 @@ const configuration = defineConfig({
         { text: "Inventaire", link: "/documentation/inventaire" },
         { text: "DNS", link: "/documentation/dns" },
         { text: "Réseau", link: "/documentation/reseau" },
+        { text: "Sauvegardes", link: "/documentation/sauvegardes" },
       ],
     },
     search: {
