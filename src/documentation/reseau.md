@@ -41,11 +41,11 @@ flowchart TB
 > - Tous les baux DHCP sont délivrés exclusivement par [Berlin](./inventaire.md#berlin), qui agit comme serveur DHCP principal.
 > - Les autres équipements (Budapest, Chisinau, Oslo, etc.) fonctionnent strictement en mode **pont transparent** (_bridge mode_, L2 only) : ils ne réalisent ni routage, ni NAT, ni aucun service réseau L3 (pas d’autre DHCP, pas de VLAN supplémentaire, pas de firewall). L’ensemble du LAN forme donc un unique segment de broadcast et un unique domaine de collision IP.
 
-| Nom                                  | Adresse IP                        | Description                | Adresse MAC       |
-| ------------------------------------ | --------------------------------- | -------------------------- | ----------------- |
-| [Berlin](./inventaire.md#berlin)     | [192.168.0.1](http://192.168.0.1) | Routeur & passerelle 4G    | 88:40:3B:EA:10:46 |
-| [Budapest](./inventaire.md#budapest) | [192.168.0.2](http://192.168.0.2) | Routeur wifi voiture/train |                   |
-| [Chisinau](./inventaire.md#chisinau) | [192.168.0.3](http://192.168.0.3) | Antenne WiFi ext. caméras  | 60:A4:B7:39:6A:0E |
+| Nom                                  | Adresse IP                        | Description               | Adresse MAC       |
+| ------------------------------------ | --------------------------------- | ------------------------- | ----------------- |
+| [Berlin](./inventaire.md#berlin)     | [192.168.0.1](http://192.168.0.1) | Routeur fibre             | 88:40:3B:EA:10:46 |
+| [Budapest](./inventaire.md#budapest) | [192.168.0.2](http://192.168.0.2) | Routeur wifi atelier      |                   |
+| [Chisinau](./inventaire.md#chisinau) | [192.168.0.3](http://192.168.0.3) | Antenne WiFi ext. caméras | 60:A4:B7:39:6A:0E |
 
 ### 🌐 Serveurs
 
