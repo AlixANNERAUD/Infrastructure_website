@@ -150,3 +150,17 @@ Ordinateur portable.
 - Processeur : Intel Core i5-11300H
 - Mémoire : 16 Go DDR4
 - Stockage : Samsung 980 (SSD - 512 Go - NVMe)
+
+## ➕ Autres équipements
+
+### 📺 Bucarest
+
+Google TV Chromecast avec Google TV (HD) pour la télévision de la chambre.
+
+### 📺 Berne
+
+Apple TV 4K (2e génération) pour la télévision du salon.
+
+### 🌞 Bratislava
+
+Module de collecte de données de production d'énergie solaire (panneau Beem On).
