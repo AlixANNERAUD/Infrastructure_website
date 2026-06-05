@@ -94,10 +94,10 @@ features:
     rel: external
     target: _blank
   - icon: 🏢
-    title: Arnaud (Odoo)
+    title: Mini Train Store (Odoo)
     details: Système de gestion d'entreprise.
-    link: https://arnaud.anneraud.fr
-    linkText: Visiter Arnaud
+    link: https://www.minitrainstore.fr
+    linkText: Visiter Mini Train Store
     rel: external
     target: _blank
   - icon: 🔗
