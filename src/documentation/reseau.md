@@ -82,7 +82,7 @@ flowchart TB
 
 | Nom                            | Adresse IP                           | Description          | Adresse MAC       |
 | ------------------------------ | ------------------------------------ | -------------------- | ----------------- |
-| [Paris](./inventaire.md#paris) | [192.168.0.61](https://192.168.0.61) | Ordinateur de bureau | 34:2e:b7:8a:d9:e1 |
+| [Paris](./inventaire.md#paris) | [192.168.0.61](https://192.168.0.61) | Ordinateur de bureau | 34:2E:B7:8A:D9:E1 |
 
 ### ➕ Autre - dynamique
 
