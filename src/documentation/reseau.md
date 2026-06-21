@@ -76,17 +76,17 @@ flowchart TB
 | [Madrid](./inventaire.md#madrid) | [192.168.0.51](https://192.168.0.51) | Imprimante chambre Alix | 38:9D:92:07:EB:DC |
 | [Kiev](./inventaire.md#kiev)     | [192.168.0.52](https://192.168.0.52) | Imprimante atelier      |                   |
 
-### ➕ Autres (DHCP)
+### ➕ Autre - statique
+
+**Plage d’adressage** : `192.168.0.61`–`192.168.0.99`
+
+| Nom                            | Adresse IP                           | Description          | Adresse MAC       |
+| ------------------------------ | ------------------------------------ | -------------------- | ----------------- |
+| [Paris](./inventaire.md#paris) | [192.168.0.61](https://192.168.0.61) | Ordinateur de bureau | 34:2e:b7:8a:d9:e1 |
+
+### ➕ Autre - dynamique
 
 **Plage dynamique (DHCP)** : `192.168.0.100`–`192.168.0.254`
 Affectée à : téléphones, objets connectés, ordinateurs…
-
-| Nom                                | Type            |
-| ---------------------------------- | --------------- |
-| [Paris](./inventaire.md#paris)     | Desktop         |
-| [Londres](./inventaire.md#londres) | Laptop          |
-| [Athènes](./inventaire.md#athenes) | Desktop Atelier |
-| [Rome](./inventaire.md#rome)       | Laptop          |
-| …                                  | Mobile/IoT      |
 
 _Voir [inventaire.md](./inventaire.md) pour la liste détaillée complète et les descriptions individualisées._
