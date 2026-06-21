@@ -1,69 +1,43 @@
-# 🛡️ Politique de sauvegarde
+# 🛡️ Plan de Continuité d'Acitivté
 
-## 🌐 Schéma global
+## ⏱️ Rétention & Historique
 
-```mermaid
-flowchart TB
-    subgraph Clients
-        CLI[Téléphones & Ordinateurs] -->|Nextcloud sync| B[Bruxelles<br>Données]
-    end
+| Cible                           | Fréquence   | Rétention | Méthode       |
+| ------------------------------- | ----------- | --------- | ------------- |
+| Bruxelles - `Donnees`           | Quotidienne | 15 jours  | Snapshots ZFS |
+| Luxembourg                      | En cours    | À définir | -             |
+| Hetzner storage box - `Donnees` | Quotidienne | 10 jours  | Snapshots     |
+| Pristina - `Donnees`            | Quotidienne | 15 jours  | Snapshots ZFS |
+| Paris - `Donnees`               | Quotidienne | 15 jours  | Snapshots ZFS |
 
-    subgraph Bruxelles
-        B --> S[(Snapshots<br>15 jours)]
-        B -.->|chiffré| OD[OneDrive<br/>quotidien]
-    end
+## 🧬 Redondance & Stockage matériel
 
-    B -->|ZFS réplication| P[Paris<br>RAID1 2×2To]
-    B -->|ZFS réplication| R[Pristina<br>Disk 1×2To]
+| Cible                 | Configuration matérielle | Méthode / Technologie             |
+| --------------------- | ------------------------ | --------------------------------- |
+| Bruxelles - `Donnees` | RAIDZ1 (4×2 To NVMe)     | ZFS                               |
+| Luxembourg            | Redondance Cloud (OCI)   | OCI Block Storage                 |
+| Paris - `Donnees`     | Mirror (2×2 To)          | ZFS                               |
+| Pristina - `Donnees`  | Stripe (1×1 To)          | ZFS _(Sans tolérance aux pannes)_ |
+| Hetzner storage box   | Redondance Hetzner       | Raid managé par l'hébergeur       |
 
-    LUX[Luxembourg<br>/opt] -->|backup| B
-```
+> ⚠️ **Note de sécurité :** La cible `Pristina` est configurée en _Stripe_ (RAID 0). Elle ne présente aucune tolérance à la panne matérielle d'un disque.
 
-## 📋 Vue d'ensemble
+## 🔄 Réplication & Flux
 
-| Cible                                           | Contenu                                                                  | Fréquence                            | Méthode                             |
-| ----------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------ | ----------------------------------- |
-| [Bruxelles](./inventaire.md#bruxelles)          | Dataset principal `Données` (4×2 To NVMe, RAIDZ1, partiellement chiffré) | —                                    | —                                   |
-| Snapshots ZFS                                   | `Données`                                                                | Quotidienne                          | `zfs snapshot` (rétention 15 jours) |
-| [Paris](./inventaire.md#paris)                  | Réplication `Données`                                                    | ~Quotidienne (déclenchée par script) | ZFS send/receive (inclut snapshots) |
-| [Pristina](./inventaire.md#pristina)            | Réplication `Données`                                                    | ~Quotidienne (déclenchée par script) | ZFS send/receive (inclut snapshots) |
-| OneDrive                                        | sync `Données`                                                           | Quotidienne                          | rclone (chiffrement côté client)    |
-| [Luxembourg](./inventaire.md#luxembourg) `/opt` | Données Docker                                                           | —                                    | Backup vers Bruxelles               |
-| Clients (Nextcloud)                             | Documents & Photos                                                       | continue                             | Nextcloud sync                      |
+| Source                | Cible                 | Méthode / Protocole                    |
+| --------------------- | --------------------- | -------------------------------------- |
+| Bruxelles - `Donnees` | Paris - `Donnees`     | ZFS send/receive (incrémental) par SSH |
+| Bruxelles - `Donnees` | Pristina - `Donnees`  | ZFS send/receive (incrémental) par SSH |
+| Bruxelles - `Donnees` | Hetzner storage box   | rclone (chiffrement côté client)       |
+| Luxembourg - `/opt`   | Bruxelles - `Donnees` | rclone (Sauvegarde fichiers)           |
+| Clients (Nextcloud)   | Bruxelles - `Donnees` | webdav                                 |
 
----
+## 🔍 Intégrité & Vérification
 
-## 🔍 Détails
-
-### 🖥️ Bruxelles – Dataset principal
-
-- **Pool** : RAIDZ1 sur 4 × 2 To NVMe (Western Digital Black SN750/SN770/SN7100 + Micron 5200)
-- **Dataset** : `Données` (unique, partiellement chiffré)
-- **Snapshots** : quotidiens, rétention 15 jours (nom : `auto-YYYYMMDD`)
-
-### 🌍 Réplication vers Paris & Pristina
-
-- **Déclencheur** : script sur les postes distants (pull) qui lance `zfs receive` quand ils sont allumés
-- **Inclus** : snapshots ZFS (réplication incrémentale)
-- **Paris** : 2 × 2 To en ZFS RAID1 (mirror)
-- **Pristina** : 1 × 2 To (disque unique)
-
-### ☁️ OneDrive
-
-- Sync quotidienne via **rclone** avec remote crypté
-- Chiffrement côté client avant upload
-
-### 🐳 Luxembourg – /opt
-
-- Le dossier `/opt` (contenant les données des conteneurs Docker) est sauvegardé dans le dataset `Données` de Bruxelles
-
-### 📱 Clients – Nextcloud
-
-- Téléphones : photos sauvegardées via Nextcloud
-- Ordinateurs : documents sauvegardés via Nextcloud
-- Stockage : dataset `Données` sur Bruxelles
-
-## 🔎 Vérification d'intégrité
-
-- **Scrub ZFS** : hebdomadaire sur Bruxelles
-- **RAM ECC** : activée sur Bruxelles pour éviter corruption silencieuse
+| Cible                 | Fréquence de test | Méthode de vérification           |
+| --------------------- | ----------------- | --------------------------------- |
+| Bruxelles - `Donnees` | Bi-hebdomadaire   | Scrub ZFS                         |
+| Paris - `Donnees`     | Bi-hebdomadaire   | Scrub ZFS                         |
+| Pristina - `Donnees`  | Bi-hebdomadaire   | Scrub ZFS                         |
+| Luxembourg            | Automatique       | Géré par l'infrastructure OCI     |
+| Hetzner storage box   | Automatique       | Géré par l'infrastructure Hetzner |
