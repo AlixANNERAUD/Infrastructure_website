@@ -1,4 +1,4 @@
-# 🛡️ Plan de Continuité d'Acitivté
+# 🛡️ Plan de Continuité d'Activité
 
 ## ⏱️ Rétention & Historique
 
@@ -26,18 +26,27 @@
 
 | Source                | Cible                 | Méthode / Protocole                    |
 | --------------------- | --------------------- | -------------------------------------- |
-| Bruxelles - `Donnees` | Paris - `Donnees`     | ZFS send/receive (incrémental) par SSH |
-| Bruxelles - `Donnees` | Pristina - `Donnees`  | ZFS send/receive (incrémental) par SSH |
+| Bruxelles - `Donnees` | Paris - `Donnees`     | ZFS send/receive (incrémental) via SSH |
+| Bruxelles - `Donnees` | Pristina - `Donnees`  | ZFS send/receive (incrémental) via SSH |
 | Bruxelles - `Donnees` | Hetzner storage box   | rclone (chiffrement côté client)       |
 | Luxembourg - `/opt`   | Bruxelles - `Donnees` | rclone (Sauvegarde fichiers)           |
-| Clients (Nextcloud)   | Bruxelles - `Donnees` | webdav                                 |
+| Clients (Nextcloud)   | Bruxelles - `Donnees` | WebDAV                                 |
 
 ## 🔍 Intégrité & Vérification
 
-| Cible                 | Fréquence de test | Méthode de vérification           |
-| --------------------- | ----------------- | --------------------------------- |
-| Bruxelles - `Donnees` | Bi-hebdomadaire   | Scrub ZFS                         |
-| Paris - `Donnees`     | Bi-hebdomadaire   | Scrub ZFS                         |
-| Pristina - `Donnees`  | Bi-hebdomadaire   | Scrub ZFS                         |
-| Luxembourg            | Automatique       | Géré par l'infrastructure OCI     |
-| Hetzner storage box   | Automatique       | Géré par l'infrastructure Hetzner |
+| Cible                 | Fréquence de test | Méthode de vérification                     |
+| --------------------- | ----------------- | ------------------------------------------- |
+| Bruxelles - `Donnees` | Bi-hebdomadaire   | Scrub ZFS + Vérification checksum à l'accès |
+| Paris - `Donnees`     | Bi-hebdomadaire   | Scrub ZFS + Vérification checksum à l'accès |
+| Pristina - `Donnees`  | Bi-hebdomadaire   | Scrub ZFS + Vérification checksum à l'accès |
+| Luxembourg            | Automatique       | Géré par l'infrastructure OCI               |
+| Hetzner storage box   | Automatique       | Géré par l'infrastructure Hetzner           |
+
+---
+
+## 📝 Résumé des garanties
+
+- **Haute disponibilité** : Données répliquées sur **3 hôtes distincts** au minimum.
+- **Résilience géographique** : Répartition sur **2 sites géographiques** distincts au minimum.
+- **Continuité** : Redondance à chaud activée sur les serveurs de Bruxelles et Luxembourg.
+- **Sécurité des données** : Intégrité vérifiée en temps réel lors des accès, et vérification totale du stockage automatisée au minimum **tous les 15 jours**.
