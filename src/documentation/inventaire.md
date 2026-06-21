@@ -16,10 +16,11 @@ Ce serveur héberge la majorité de mes services personnels. TrueNAS Apps et Ans
 - Alimentation : Cooler Master MWE 600 White 230V (alimentation avec un excellent rendement à très faible charge pour un prix abordable)
 - Boîtier : MSI Pro Shield M100P (petit format, peu coûteux, avec une bonne ventilation)
 - Stockage :
-  - Western Digital Black SN750 (SSD - 2 To - NVMe - Pool de données ZFS)
-  - Western Digital Black SN770 (SSD - 2 To - NVMe - Pool de données ZFS)
-  - Western Digital Black SN7100 (SSD - 2 To - NVMe - Pool de données ZFS)
-  - Micron 5200 PRO (MTFDDAK1T9TDD - SSD - 1,9 To - SATA - Pool de données ZFS)
+  - Pool ZFS RAIDZ1 (Donnees - 4,53 To) :
+    - Western Digital Black SN750 (SSD - 2 To - NVMe - Pool de données ZFS)
+    - Western Digital Black SN770 (SSD - 2 To - NVMe - Pool de données ZFS)
+    - Western Digital Black SN7100 (SSD - 2 To - NVMe - Pool de données ZFS)
+    - Micron 5200 PRO (MTFDDAK1T9TDD - SSD - 1,9 To - SATA - Pool de données ZFS)
   - Western Digital WD Green (WDS120G2G0A-00JH30 - SSD - 120 Go - SATA - Système TrueNAS)
 
 ### Luxembourg
@@ -116,8 +117,9 @@ Ordinateur de bureau utilisé pour les tâches quotidiennes, le développement e
 - Stockage :
   - Crucial P3 Plus (SSD - 1 To - NVMe - Système d'exploitation)
   - HGST (HDD - 1 To - Stockage de données)
-  - Western Digital Green (HDD - 2 To - Sauvegarde Bruxelles)
-  - Seagate Barracuda (HDD - 2 To - Sauvegarde Bruxelles)
+  - Pool ZFS Mirror (Sauvegarde Bruxelles) :
+    - Western Digital Green (HDD - 2 To)
+    - Seagate Barracuda (HDD - 2 To)
 
 ### Londres
 
@@ -139,7 +141,7 @@ Ordinateur fixe de l'atelier.
 - Mémoire : 8 Go DDR4
 - Stockage :
   - Crucial BX500 (SSD - 240 Go - SATA - Système d'exploitation)
-  - Seagate Barracuda (HDD - 2 To - Sauvegarde Bruxelles)
+  - Seagate Barracuda (HDD - 2 To - Pool ZFS Stripe - Sauvegarde Bruxelles)
 
 ### Rome
 
