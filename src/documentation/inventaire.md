@@ -39,11 +39,11 @@ Ce serveur est hébergé sur Oracle Cloud Infrastructure (OCI) et sert aux servi
 
 ### Berlin
 
-Routeur de l'opérateur de boucle locale (Livebox S, Orange) avec ONT intégré pour de la FTTH (1 Gbps symétrique).
+Routeur de l'opérateur Orange (Livebox S) relié à un ONT externe pour la FTTH (1 Gbps symétrique).
 
 ### Minsk
 
-Routeur de l'appartement à Rouen.
+Routeur SFR Box 7 (NB6VAC) de l'appartement à Rouen.
 
 ### Chisinau
 
