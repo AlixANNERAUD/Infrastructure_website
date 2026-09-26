@@ -16,6 +16,20 @@ hero:
       link: /documentation
 
 features:
+  - icon: 🤖
+    title: Assistant (Open WebUI)
+    details: Interface d'assistant IA.
+    link: https://assistant.anneraud.fr
+    linkText: Visiter Assistant
+    rel: external
+    target: _blank
+  - icon: 🔎
+    title: Recherche (SearXNG)
+    details: Moteur de recherche respectueux de la vie privée.
+    link: https://recherche.anneraud.fr
+    linkText: Visiter Recherche
+    rel: external
+    target: _blank
   - icon: 🌐
     title: Nuage (Nextcloud)
     details: Stockage cloud et collaboration.
