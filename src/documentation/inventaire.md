@@ -154,7 +154,7 @@ Ordinateur fixe de l'atelier.
 - Processeur : Intel Core i5-6500
 - Mémoire : 8 Go DDR4
 - Stockage :
-  - Crucial BX500 (SSD - 240 Go - SATA - Système d'exploitation)
+  - Samsung 860 EVO (SSD - 512 Go - SATA - Système d'exploitation)
   - Seagate Barracuda (HDD - 2 To - Pool ZFS Stripe - Sauvegarde Bruxelles)
 
 ### Rome
