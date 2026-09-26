@@ -127,15 +127,23 @@ Ordinateur de bureau situé dans l'appartement à Rouen, utilisé pour les tâch
     - Western Digital Green (HDD - 2 To)
     - Seagate Barracuda (HDD - 2 To)
 
-### Londres
+### Belgrade
 
-Ordinateur portable pour les déplacements, tout en restant suffisamment puissant pour les tâches de développement et de bureautique.
-
-- Système d'exploitation : Debian 13 "Trixie"
-- Modèle : HP HP ProBook 445
+- Système d'exploitation : Windows 11
+- Modèle : HP ProBook 445
 - Processeur : AMD Ryzen 5 7530U
 - Mémoire : 16 Go DDR4
 - Stockage : SSSTC CL4-8D512 (SSD - 256 Go - NVMe)
+
+### Londres
+
+Ordinateur portable utilisé pour les déplacements, le développement et la bureautique.
+
+- Système d'exploitation : Debian 13 "Trixie"
+- Modèle : HP EliteBook 840 14 inch G10 Notebook PC
+- Processeur : Intel Core i7-1370P (14 cœurs, 20 threads)
+- Mémoire : 32 Go
+- Stockage : WD PC SN740 (SSD - 512 Go - NVMe)
 
 ### Athènes
 
