@@ -8,6 +8,8 @@ Ce document fournit un inventaire des composants de l'infrastructure, notamment 
 
 Ce serveur héberge la majorité de mes services personnels. TrueNAS Apps et Ansible sont utilisés pour le déploiement et la gestion. Il a été conçu dans une logique d'efficacité énergétique (~20 W au repos) et de fiabilité.
 
+Home Assistant y fonctionne dans un conteneur Docker connecté au réseau local via macvlan (`192.168.0.24`).
+
 - Système d'exploitation : [TrueNAS Community Edition](https://www.truenas.com/truenas-community-edition/) (basé sur Debian)
 - Carte mère : ASRock B550M-ITX/ac (petit format, compatible avec les processeurs AMD Ryzen, très économe en énergie)
 - Processeur : AMD Ryzen 3 PRO 4350G avec Radeon Graphics (4 cœurs, 8 threads, TDP de 65 W, consommation réduite grâce à l'architecture monolithique des séries G)

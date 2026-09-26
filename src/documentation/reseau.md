@@ -71,7 +71,8 @@ NetBird utilise `100.64.0.0/24` (hôtes `100.64.0.1`–`100.64.0.254`), indépen
 | ---------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------- | ----------- |
 | [Bruxelles](./inventaire.md#bruxelles)   | [192.168.0.21](http://192.168.0.21) | Serveur TrueNAS                                                                  |             |
 | [Pristina](./inventaire.md#pristina)     | [192.168.0.22](http://192.168.0.22) | Serveur Debian de sauvegarde (virtualisé sur [Athènes](./inventaire.md#athenes)) |             |
-| [Luxembourg](./inventaire.md#luxembourg) | [192.168.0.23](http://192.168.0.23) | Serveur Oracle Cloud                                                             |             |
+| [Luxembourg](./inventaire.md#luxembourg) | [192.168.2.16](http://192.168.2.16) | Serveur Oracle Cloud                                                             |             |
+| Home Assistant                           | [192.168.0.24](http://192.168.0.24) | Conteneur macvlan hébergé sur [Bruxelles](./inventaire.md#bruxelles)             |             |
 
 ### 🎥 Caméras
 
