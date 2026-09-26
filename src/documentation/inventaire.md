@@ -11,17 +11,17 @@ Ce serveur héberge la majorité de mes services personnels. TrueNAS Apps et Ans
 Home Assistant y fonctionne dans un conteneur Docker connecté au réseau local via macvlan (`192.168.0.24`).
 
 - Système d'exploitation : [TrueNAS Community Edition](https://www.truenas.com/truenas-community-edition/) (basé sur Debian)
-- Carte mère : ASRock B550M-ITX/ac (petit format, compatible avec les processeurs AMD Ryzen, très économe en énergie)
-- Processeur : AMD Ryzen 3 PRO 4350G avec Radeon Graphics (4 cœurs, 8 threads, TDP de 65 W, consommation réduite grâce à l'architecture monolithique des séries G)
+- Carte mère : ASRock B550M-ITX/ac (format Mini-ITX, socket AM4)
+- Processeur : AMD Ryzen 3 PRO 4350G avec Radeon Graphics (4 cœurs, 8 threads, fréquence maximale de 4,1 GHz)
 - Refroidissement : AMD Wraith Spire (ventirad d'origine du processeur, suffisant pour le TDP de 65 W)
-- Mémoire : 32 Go DDR4 ECC (ECC nécessaire pour la stabilité du pool de données ZFS)
+- Mémoire : 32 Go DDR4 ECC Samsung (1 × 32 Go, 2667 MT/s, un emplacement libre)
 - Alimentation : Cooler Master MWE 600 White 230V (alimentation avec un excellent rendement à très faible charge pour un prix abordable)
 - Boîtier : MSI Pro Shield M100P (petit format, peu coûteux, avec une bonne ventilation)
 - Stockage :
   - Pool ZFS RAIDZ1 (Donnees - 4,53 To) :
-    - Western Digital Black SN750 (SSD - 2 To - NVMe - Pool de données ZFS)
-    - Western Digital Black SN770 (SSD - 2 To - NVMe - Pool de données ZFS)
-    - Western Digital Black SN7100 (SSD - 2 To - NVMe - Pool de données ZFS)
+    - WD_BLACK SN750 (SSD - 2 To - NVMe - Pool de données ZFS)
+    - WD_BLACK SN770 (SSD - 2 To - NVMe - Pool de données ZFS)
+    - WD_BLACK SN7100 (SSD - 2 To - NVMe - Pool de données ZFS)
     - Micron 5200 PRO (MTFDDAK1T9TDD - SSD - 1,9 To - SATA - Pool de données ZFS)
   - Western Digital WD Green (WDS120G2G0A-00JH30 - SSD - 120 Go - SATA - Système TrueNAS)
 
