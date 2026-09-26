@@ -39,6 +39,10 @@ Ce serveur est hébergé sur Oracle Cloud Infrastructure (OCI) et sert aux servi
 
 Routeur de l'opérateur de boucle locale (Livebox S, Orange) avec ONT intégré pour de la FTTH (1 Gbps symétrique).
 
+### Minsk
+
+Routeur de l'appartement à Rouen.
+
 ### Chisinau
 
 Routeur Wi-Fi pour l'atelier, situé en dehors de la maison. Il est également utilisé pour connecter Skopje, Kiev et Athènes au réseau local.
@@ -107,7 +111,7 @@ Imprimante laser monochrome pour les impressions plus fréquentes dans l'atelier
 
 ### Paris
 
-Ordinateur de bureau utilisé pour les tâches quotidiennes, le développement et d'autres activités nécessitant davantage de puissance de calcul.
+Ordinateur de bureau situé dans l'appartement à Rouen, utilisé pour les tâches quotidiennes, le développement et d'autres activités nécessitant davantage de puissance de calcul.
 
 - Système d'exploitation : Debian 13 "Trixie"
 - Processeur : AMD Ryzen 9 3900X
