@@ -37,6 +37,13 @@ features:
     linkText: Visiter Nuage
     rel: external
     target: _blank
+  - icon: 📝
+    title: Bureautique (Collabora)
+    details: Suite bureautique en ligne.
+    link: https://collabora.anneraud.fr
+    linkText: Visiter Collabora
+    rel: external
+    target: _blank
   - icon: 💬
     title: Messagerie (Matrix)
     details: Plateforme de communication sécurisée.
@@ -77,6 +84,13 @@ features:
     details: Système de gestion de documents. Nécessite un VPN.
     link: https://archive.anneraud.fr
     linkText: Visiter Archives
+    rel: external
+    target: _blank
+  - icon: ✉️
+    title: Archive courriel (Bichon)
+    details: Archive de courriels.
+    link: https://archive-courriel.anneraud.fr
+    linkText: Visiter Bichon
     rel: external
     target: _blank
   - icon: 💰
@@ -147,6 +161,20 @@ features:
     details: Serveur multimédia pour films, séries et musique.
     link: https://mediatheque.anneraud.fr
     linkText: Visiter Médiathèque
+    rel: external
+    target: _blank
+  - icon: ⬇️
+    title: MeTube
+    details: Téléchargement de vidéos en ligne. Nécessite un VPN.
+    link: https://metube.anneraud.fr
+    linkText: Visiter MeTube
+    rel: external
+    target: _blank
+  - icon: 🖥️
+    title: Parc (MeshCentral)
+    details: Gestion à distance des appareils.
+    link: https://parc.anneraud.fr
+    linkText: Visiter MeshCentral
     rel: external
     target: _blank
   - icon: 🎬
