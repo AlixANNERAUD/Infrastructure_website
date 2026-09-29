@@ -18,14 +18,14 @@ hero:
 features:
   - icon: 🤖
     title: Assistant (Open WebUI)
-    details: Interface d'assistant IA.
+    details: Interface d'assistant IA. Nécessite un VPN.
     link: https://assistant.anneraud.fr
     linkText: Visiter Assistant
     rel: external
     target: _blank
   - icon: 🔎
     title: Recherche (SearXNG)
-    details: Moteur de recherche respectueux de la vie privée.
+    details: Moteur de recherche respectueux de la vie privée. Nécessite un VPN.
     link: https://recherche.anneraud.fr
     linkText: Visiter Recherche
     rel: external
@@ -55,7 +55,7 @@ features:
     title: Traduction (Tolgee)
     details: Plateforme de traduction. Nécessite un VPN.
     link: https://translate.anneraud.fr
-    linkText: Visiter Gatus
+    linkText: Visiter Tolgee
     rel: external
     target: _blank
   - icon: 🖼️
@@ -88,7 +88,7 @@ features:
     target: _blank
   - icon: ✉️
     title: Archive courriel (Bichon)
-    details: Archive de courriels.
+    details: Archive de courriels. Nécessite un VPN.
     link: https://archive-courriel.anneraud.fr
     linkText: Visiter Bichon
     rel: external
@@ -116,7 +116,7 @@ features:
     target: _blank
   - icon: 📚
     title: PDF (BentoPDF)
-    details: Outil de manipulation de PDF.
+    details: Outil de manipulation de PDF. Nécessite un VPN.
     link: https://pdf.anneraud.fr
     linkText: Visiter PDF
     rel: external

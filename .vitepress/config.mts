@@ -44,6 +44,7 @@ const configuration = defineConfig({
 
     sidebar: {
       "/documentation": [
+        { text: "Exploitation et accès", link: "/documentation/exploitation" },
         { text: "Inventaire", link: "/documentation/inventaire" },
         { text: "DNS", link: "/documentation/dns" },
         { text: "Réseau", link: "/documentation/reseau" },

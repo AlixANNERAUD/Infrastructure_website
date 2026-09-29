@@ -4,12 +4,13 @@ Tous les enregistrements DNS sont gérés via [Cloudflare](https://www.cloudflar
 
 La plupart des services utilisent des enregistrements CNAME pointant vers le serveur de destination, qui sont :
 
-| Domaine                       | Description                      | Accès  | Serveur    | Mise à jour |
-| ----------------------------- | -------------------------------- | ------ | ---------- | ----------- |
-| local.bruxelles.anneraud.fr   | Accès réseau local à Bruxelles   | Privé  | Bruxelles  | Statique    |
-| local.luxembourg.anneraud.fr  | Accès réseau local à Luxembourg  | Privé  | Luxembourg | Statique    |
-| global.bruxelles.anneraud.fr  | Accès réseau global à Bruxelles  | Public | Bruxelles  | Dynamique   |
-| global.luxembourg.anneraud.fr | Accès réseau global à Luxembourg | Public | Luxembourg | Statique    |
+| Domaine                       | Description                      | Accès  | Serveur    | Mise à jour                               |
+| ----------------------------- | -------------------------------- | ------ | ---------- | ----------------------------------------- |
+| local.bruxelles.anneraud.fr   | Accès réseau local à Bruxelles   | Privé  | Bruxelles  | Statique                                  |
+| local.luxembourg.anneraud.fr  | Accès réseau local à Luxembourg  | Privé  | Luxembourg | Statique                                  |
+| global.bruxelles.anneraud.fr  | Accès réseau global à Bruxelles  | Public | Bruxelles  | Dynamique                                 |
+| global.luxembourg.anneraud.fr | Accès réseau global à Luxembourg | Public | Luxembourg | Statique                                  |
+| parc.anneraud.fr              | MeshCentral                      | Public | Bruxelles  | CNAME vers `global.bruxelles.anneraud.fr` |
 
 Voir:
 

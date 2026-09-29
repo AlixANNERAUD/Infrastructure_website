@@ -45,16 +45,16 @@ Routeur de l'opérateur Orange (Livebox S) relié à un ONT externe pour la FTTH
 
 Routeur SFR Box 7 (NB6VAC) de l'appartement à Rouen.
 
-### Chisinau
+### Budapest
 
-Routeur Wi-Fi pour l'atelier, situé en dehors de la maison. Il est également utilisé pour connecter Skopje, Kiev et Athènes au réseau local.
+Routeur Wi-Fi de l'atelier, situé en dehors de la maison. Il est également utilisé pour connecter Skopje, Kiev et Athènes au réseau local.
 
 - Modèle : TP-Link AX1500
 - Connectivité : Wi-Fi 6 (802.11ax) + 4 ports Gigabit Ethernet
 
-### Oslo
+### Chisinau
 
-Antenne Wi-Fi extérieure déportée, à propagation conique, pour fournir une connexion à Amsterdam (caméra de surveillance).
+Antenne Wi-Fi extérieure déportée, à propagation conique, pour fournir une connexion aux caméras de surveillance.
 
 - Modèle : TP-Link CPE610
 - Fréquence : 5 GHz
@@ -62,7 +62,7 @@ Antenne Wi-Fi extérieure déportée, à propagation conique, pour fournir une c
 
 ### Sofia
 
-Switch (L2) pour connecter les caméras de surveillance et Chisinau à Berlin.
+Switch (L2) pour connecter les caméras de surveillance et Budapest à Berlin.
 
 - Modèle : Linksys
 - Ports : 5 ports Gigabit Ethernet
