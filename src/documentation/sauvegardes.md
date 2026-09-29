@@ -12,15 +12,28 @@
 
 ## 🧬 Redondance & Stockage matériel
 
-| Cible                 | Configuration matérielle      | Méthode / Technologie             |
-| --------------------- | ----------------------------- | --------------------------------- |
-| Bruxelles - `Donnees` | RAIDZ1 (4×2 To NVMe)          | ZFS                               |
-| Luxembourg            | Redondance Cloud (OCI)        | OCI Block Storage                 |
-| Paris - `Donnees`     | Mirror (2×2 To)               | ZFS                               |
-| Pristina - `Donnees`  | Stripe (capacité à confirmer) | ZFS _(sans tolérance aux pannes)_ |
-| Hetzner storage box   | Redondance Hetzner            | Raid managé par l'hébergeur       |
+| Cible                             | Configuration matérielle      | Méthode / Technologie             |
+| --------------------------------- | ----------------------------- | --------------------------------- |
+| Bruxelles - `Donnees`             | RAIDZ1 (4×2 To NVMe)          | ZFS                               |
+| Luxembourg                        | Redondance Cloud (OCI)        | OCI Block Storage                 |
+| Paris - `Donnees`                 | Mirror (2×2 To)               | ZFS                               |
+| Pristina - `Donnees`              | Stripe (capacité à confirmer) | ZFS _(sans tolérance aux pannes)_ |
+| Hetzner Storage Box (FSN1-BX1000) | Redondance Hetzner            | RAID géré par l'hébergeur         |
 
 > ⚠️ **Note de sécurité :** La cible `Pristina` est configurée en _Stripe_ (RAID 0). Elle ne présente aucune tolérance à la panne matérielle d'un disque.
+
+## 🌍 Répartition géographique
+
+| Copie / serveur                   | Emplacement            | Séparation et limites                                                                             |
+| --------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------- |
+| Bruxelles                         | Maison au Houlme       | Site principal                                                                                    |
+| Pristina                          | Atelier au Houlme      | Bâtiment distinct, mais même commune et risques locaux proches de Bruxelles                       |
+| Paris                             | Rouen                  | Site distinct, mais proche du Houlme ; ne constitue pas à lui seul une séparation régionale forte |
+| Hetzner Storage Box (FSN1-BX1000) | Falkenstein, Allemagne | Copie distante, dans une autre région et un autre pays                                            |
+
+Les copies sont donc réparties entre Le Houlme, Rouen et Falkenstein. Cela améliore la résilience géographique : un incident limité à la maison ou à l'atelier ne devrait pas toucher les autres sites, et une copie distante existe en Allemagne. Le Houlme et Rouen restent toutefois proches ; la Storage Box Hetzner est la principale protection documentée contre un sinistre régional touchant la Normandie.
+
+Cette répartition améliore la reprise après sinistre, mais ne garantit pas la haute disponibilité des services. La récupération dépend de la fraîcheur des copies et de leur possibilité de restauration ; des tests de restauration restent nécessaires.
 
 ## 🔄 Réplication & Flux
 
@@ -60,7 +73,7 @@ Les restaurations doivent être testées périodiquement. Ce dépôt ne consigne
 
 ## 📝 Résumé des garanties
 
-- **Haute disponibilité** : Données répliquées sur **3 hôtes distincts** au minimum.
-- **Résilience géographique** : Répartition sur **2 sites géographiques** distincts au minimum.
+- **Copies de données** : Réplication entre Bruxelles, Paris et Pristina, avec une copie supplémentaire sur la Storage Box Hetzner.
+- **Résilience géographique** : Copies réparties entre Le Houlme, Rouen et Falkenstein (Allemagne) ; Houlme et Rouen restent des sites proches.
 - **Continuité** : Redondance à chaud activée sur les serveurs de Bruxelles et Luxembourg.
 - **Sécurité des données** : Intégrité vérifiée en temps réel lors des accès, et vérification totale du stockage automatisée au minimum **tous les 15 jours**.

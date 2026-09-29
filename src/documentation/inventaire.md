@@ -6,7 +6,7 @@ Ce document fournit un inventaire des composants de l'infrastructure, notamment 
 
 ### Bruxelles
 
-Ce serveur héberge la majorité de mes services personnels. TrueNAS Apps et Ansible sont utilisés pour le déploiement et la gestion. Il a été conçu dans une logique d'efficacité énergétique (~20 W au repos) et de fiabilité.
+Ce serveur, installé dans la maison au Houlme, héberge la majorité de mes services personnels. TrueNAS Apps et Ansible sont utilisés pour le déploiement et la gestion. Il a été conçu dans une logique d'efficacité énergétique (~20 W au repos) et de fiabilité.
 
 Home Assistant y fonctionne dans un conteneur Docker connecté au réseau local via macvlan (`192.168.0.24`).
 
@@ -34,6 +34,10 @@ Ce serveur est hébergé sur Oracle Cloud Infrastructure (OCI) et sert aux servi
 - Processeur : ARM Ampere A1 (4 cœurs)
 - Mémoire : 24 Go
 - Stockage : 200 Go
+
+### Pristina
+
+Serveur Debian de sauvegarde virtualisé sur l'ordinateur Athènes, dans l'atelier au Houlme. Il reçoit une réplication des données de Bruxelles ; son emplacement dans un bâtiment distinct ne le protège pas d'un sinistre touchant toute la zone du Houlme.
 
 ## 🌐 Réseau
 
