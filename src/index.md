@@ -30,6 +30,13 @@ features:
     linkText: Visiter Recherche
     rel: external
     target: _blank
+  - icon: 🔐
+    title: Authentification (Zitadel)
+    details: Fournisseur d'identité et d'authentification.
+    link: https://authentification.anneraud.fr
+    linkText: Visiter Zitadel
+    rel: external
+    target: _blank
   - icon: 🌐
     title: Nuage (Nextcloud)
     details: Stockage cloud et collaboration.
