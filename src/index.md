@@ -14,11 +14,14 @@ hero:
     - theme: alt
       text: 📖 Documentation
       link: /documentation
+    - theme: alt
+      text: 🧑‍💻 Accès aux services
+      link: /documentation/exploitation
 
 features:
   - icon: 🤖
     title: Assistant (Open WebUI)
-    details: Interface d'assistant IA. Nécessite un VPN.
+    details: Interface d’assistant IA. Nécessite un VPN.
     link: https://assistant.anneraud.fr
     linkText: Visiter Assistant
     rel: external
@@ -32,14 +35,14 @@ features:
     target: _blank
   - icon: 🔐
     title: Authentification (Zitadel)
-    details: Fournisseur d'identité et d'authentification.
+    details: Fournisseur d’identité et d’authentification.
     link: https://authentification.anneraud.fr
-    linkText: Visiter Zitadel
+    linkText: Visiter Authentification
     rel: external
     target: _blank
   - icon: 🌐
     title: Nuage (Nextcloud)
-    details: Stockage cloud et collaboration.
+    details: Stockage en ligne et collaboration.
     link: https://nuage.anneraud.fr
     linkText: Visiter Nuage
     rel: external
@@ -48,28 +51,21 @@ features:
     title: Bureautique (Collabora)
     details: Suite bureautique en ligne.
     link: https://collabora.anneraud.fr
-    linkText: Visiter Collabora
+    linkText: Visiter Bureautique
     rel: external
     target: _blank
   - icon: 💬
     title: Messagerie (Matrix)
     details: Plateforme de communication sécurisée.
     link: https://matrix.anneraud.fr
-    linkText: Visiter Matrix
+    linkText: Visiter Messagerie
     rel: external
     target: _blank
   - icon: 🌎
     title: Traduction (Tolgee)
     details: Plateforme de traduction.
     link: https://translate.anneraud.fr
-    linkText: Visiter Tolgee
-    rel: external
-    target: _blank
-  - icon: 🖼️
-    title: Galerie
-    details: Hébergement de photos.
-    link: https://galerie.anneraud.fr
-    linkText: Visiter Galerie
+    linkText: Visiter Traduction
     rel: external
     target: _blank
   - icon: 🏠
@@ -88,7 +84,7 @@ features:
     target: _blank
   - icon: 📦
     title: Archives (Paperless-ngx)
-    details: Système de gestion de documents. Nécessite un VPN.
+    details: Gestion et archivage de documents. Nécessite un VPN.
     link: https://archive.anneraud.fr
     linkText: Visiter Archives
     rel: external
@@ -97,7 +93,7 @@ features:
     title: Archive courriel (Bichon)
     details: Archive de courriels. Nécessite un VPN.
     link: https://archive-courriel.anneraud.fr
-    linkText: Visiter Bichon
+    linkText: Visiter Archive courriel
     rel: external
     target: _blank
   - icon: 💰
@@ -109,7 +105,7 @@ features:
     target: _blank
   - icon: 📊
     title: Statistiques (Umami)
-    details: Plateforme d'analyse web.
+    details: Statistiques de fréquentation des sites.
     link: https://s.anneraud.fr
     linkText: Visiter Statistiques
     rel: external
@@ -130,7 +126,7 @@ features:
     target: _blank
   - icon: 🏢
     title: Mini Train Store (Odoo)
-    details: Système de gestion d'entreprise.
+    details: Système de gestion d’entreprise.
     link: https://www.minitrainstore.fr
     linkText: Visiter Mini Train Store
     rel: external
@@ -150,15 +146,15 @@ features:
     rel: external
     target: _blank
   - icon: 🤖
-    title: Automatisations (n8n)
-    details: Plateforme d'automatisation des workflows. Nécessite un VPN.
+    title: Automatisation (n8n)
+    details: Automatisation de tâches entre applications. Nécessite un VPN.
     link: https://automatisation.anneraud.fr
-    linkText: Visiter Automatisations
+    linkText: Visiter Automatisation
     rel: external
     target: _blank
   - icon: 🕒
     title: Wakapi
-    details: Suivi du temps de codage.
+    details: Suivi du temps passé à programmer.
     link: https://wakapi.anneraud.fr
     linkText: Visiter Wakapi
     rel: external
@@ -177,11 +173,18 @@ features:
     linkText: Visiter MeTube
     rel: external
     target: _blank
+  - icon: 🧲
+    title: Téléchargement (qBittorrent)
+    details: Gestionnaire de téléchargements. Nécessite un VPN.
+    link: https://telechargement.anneraud.fr
+    linkText: Visiter Téléchargement
+    rel: external
+    target: _blank
   - icon: 🖥️
     title: Parc (MeshCentral)
     details: Gestion à distance des appareils. Nécessite un VPN.
     link: https://parc.anneraud.fr
-    linkText: Visiter MeshCentral
+    linkText: Visiter Parc
     rel: external
     target: _blank
   - icon: 🎬
@@ -200,7 +203,7 @@ features:
     target: _blank
   - icon: 🔍
     title: Prowlarr
-    details: Gestionnaire d'indexeurs. Nécessite un VPN.
+    details: Gestionnaire d’indexeurs. Nécessite un VPN.
     link: https://prowlarr.anneraud.fr
     linkText: Visiter Prowlarr
     rel: external
@@ -214,7 +217,7 @@ features:
     target: _blank
   - icon: ➕
     title: Jellyseerr
-    details: Gestionnaire de demandes de contenu. Nécessite un VPN.
+    details: Demandes de films et de séries. Nécessite un VPN.
     link: https://jellyseerr.anneraud.fr
     linkText: Visiter Jellyseerr
     rel: external

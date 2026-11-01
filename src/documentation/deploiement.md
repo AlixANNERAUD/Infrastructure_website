@@ -1,6 +1,6 @@
 # 🚀 Déploiement
 
-Tout ce qui est déployé par Ansible est décrit dans le [dépôt Infrastructure](https://github.com/AlixANNERAUD/Infrastructure), public. Un changement passe toujours par une pull request vérifiée par l’intégration continue avant d’être appliqué aux serveurs.
+Cette page explique comment les services passent du [dépôt Infrastructure](https://github.com/AlixANNERAUD/Infrastructure), public, aux serveurs. Tout ce que déploie Ansible y est décrit, et un changement passe toujours par une pull request vérifiée par l’intégration continue avant d’être appliqué. Ce site a son propre dépôt et sa propre publication (voir [Ce site](#ce-site)).
 
 ## 📁 Organisation du dépôt {#organisation}
 
@@ -12,7 +12,7 @@ Tout ce qui est déployé par Ansible est décrit dans le [dépôt Infrastructur
 | `inventory/`          | Hôtes, un groupe par service indiquant l’hôte qui le porte, réglages propres à chaque hôte              |
 | `roles/`              | Rôles partagés : `compose_service`, `zitadel_applications`                                              |
 | `opentofu/zitadel/`   | Applications OIDC de Zitadel (voir [Architecture](architecture.md#authentification))                    |
-| `vault/`              | Sous-module privé contenant les secrets chiffrés                                                        |
+| `vault/`              | Sous-module privé contenant les secrets chiffrés (voir [Sécurité](securite.md#secrets))                 |
 | `site.yml`            | Importe le playbook de chaque service, Traefik en premier                                               |
 
 Les dossiers et groupes portent le nom de la fonction du service (`authentification`, `deploiement`, `etat`…), pas celui du logiciel : remplacer un logiciel ne change pas l’organisation.
@@ -28,7 +28,7 @@ Chaque service Docker Compose est déployé par le même rôle, <RepositoryRefer
 3. écrit le fichier `.env` (lisible par son seul propriétaire) avec les variables et secrets du service, dont l’utilisateur et le groupe sous lesquels tournent les conteneurs ;
 4. crée à l’avance les fichiers montés dans les conteneurs, sinon Docker créerait un dossier à leur place, ainsi que les réseaux externes déclarés ;
 5. démarre la pile : les conteneurs ne sont recréés que si leur image ou leur configuration change, et redémarrés quand un fichier de configuration change (sauf pour les fichiers que le service recharge lui-même) ;
-6. fait pointer les enregistrements DNS du service vers l’hôte, en public ou en privé.
+6. fait pointer les enregistrements DNS du service vers l’hôte, en public ou en privé (voir [DNS](dns.md#automatisation)).
 
 Le rôle signale aussi un réseau existant qui ne correspond plus à sa déclaration, sans jamais le recréer de lui-même : recréer un réseau déconnecterait tous ses conteneurs.
 
@@ -51,25 +51,21 @@ mise test                                         # scénarios Molecule des rôl
 
 Les zones DNS ne sont pas appliquées par `site.yml` : chacune a son propre playbook, lancé séparément.
 
-## 🔑 Secrets {#secrets}
-
-Les secrets (mots de passe, jetons, clés d’API) ne sont jamais dans le dépôt public. Ils sont dans un sous-module Git privé, chiffrés avec [Ansible Vault](https://docs.ansible.com/ansible/latest/vault_guide/index.html). Le mot de passe du coffre est conservé dans le trousseau du système (Secret Service, Keychain ou Credential Locker) : il est demandé une fois par machine, puis lu par Ansible au besoin.
-
-Au déploiement, chaque secret n’est écrit que dans le fichier `.env` du service qui l’utilise, et les tâches qui les manipulent n’affichent rien dans les journaux. Modifier un secret se fait en deux temps : d’abord dans le dépôt privé, puis dans le dépôt public pour mettre à jour la référence du sous-module.
+Les playbooks lisent leurs secrets dans un coffre chiffré, dont le mot de passe reste dans le trousseau du système (voir [Sécurité](securite.md#secrets)).
 
 ## ✅ Intégration continue {#integration-continue}
 
 Chaque pull request et chaque push sur `main` lancent des vérifications sur GitHub Actions. L’intégration continue n’a pas accès aux secrets : les playbooks sont analysés avec des fichiers de coffre vides, ce qui oblige chaque playbook à rester lisible sans eux.
 
-| Vérification           | Contenu                                                                                                              |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| yamllint, ansible-lint | Style YAML, bonnes pratiques Ansible (modules complets, `changed_when`, gestionnaires…)                              |
-| Compose                | `docker compose config` sur chaque service, avec des valeurs factices pour les variables                             |
-| Molecule               | Rôles `compose_service` et `zitadel_applications` exécutés sur des piles de test                                     |
-| OpenTofu               | Formatage et validation de la configuration Zitadel                                                                  |
-| Routes Traefik         | Les routes de Bruxelles sont rendues puis chargées dans un vrai Traefik : chaque routeur doit être actif et conforme |
-| Supervision            | La supervision est démarrée avec des métriques d’exemple : les règles d’alerte doivent se déclencher comme prévu     |
-| Protection             | CrowdSec et Traefik sont démarrés ensemble : une adresse bannie est refusée, le LAN et le VPN passent toujours       |
+| Vérification           | Contenu                                                                                                                 |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| yamllint, ansible-lint | Style YAML, bonnes pratiques Ansible (modules complets, `changed_when`, gestionnaires…)                                 |
+| Compose                | `docker compose config` sur chaque service, avec des valeurs factices pour les variables                                |
+| Molecule               | Rôles `compose_service` et `zitadel_applications` exécutés sur des piles de test                                        |
+| OpenTofu               | Formatage et validation de la configuration Zitadel                                                                     |
+| Routes Traefik         | Les routes de Bruxelles sont rendues puis chargées dans un vrai Traefik : chaque routeur doit être actif et conforme    |
+| Supervision            | La supervision est démarrée avec des métriques d’exemple : les règles d’alerte doivent se déclencher comme prévu        |
+| Protection             | CrowdSec et Traefik sont démarrés ensemble : une adresse bannie est refusée, le réseau local et le VPN passent toujours |
 
 Une vérification unique, exigée par les règles de la branche `main`, attend le succès de toutes les autres.
 
@@ -82,15 +78,29 @@ Chaque image Docker est figée sur une version exacte : jamais `latest`, jamais 
 - **Branche protégée :** `main` n’accepte que des pull requests dont l’intégration continue est passée, fusionnées en un seul commit.
 - **Aperçu avant application :** `mise preview` montre les changements (`--check --diff`) avant tout déploiement réel.
 - **Configuration décrite dans le dépôt :** ce que déploie Ansible vient du dépôt ; ce qu’Ansible ne peut pas régler lui-même (interface TrueNAS notamment), il le vérifie et indique les étapes à faire.
-- **Ports publiés sous contrôle :** Docker publie ses ports en contournant le pare-feu de l’hôte. Seul Traefik publie les ports web ; son déploiement vérifie qu’aucun autre conteneur ne les occupe et, sur Bruxelles, liste les ports publiés qui ne sont pas attendus.
+- **Ports publiés sous contrôle :** le déploiement de Traefik vérifie qu’aucun autre conteneur n’occupe les ports web et, sur Bruxelles, liste les ports publiés qui ne sont pas attendus (voir [Sécurité](securite.md#cloisonnement)).
 - **Compte dédié :** Ansible se connecte avec un compte d’automatisation à clé SSH, distinct des comptes personnels (voir [Sécurité](securite.md#ssh)).
 
 ## 🤖 Semaphore {#semaphore}
 
-[Semaphore](https://semaphoreui.com/) est une interface web pour lancer les playbooks depuis Bruxelles, sans passer par l’ordinateur portable. Son service est en préparation dans une pull request du dépôt ; sa mise en service est à venir.
+[Semaphore](https://semaphoreui.com/) est une interface web pour lancer les playbooks depuis Bruxelles, sans passer par l’ordinateur portable. Son service est fusionné dans le dépôt ; sa mise en service est à venir (voir la [feuille de route](feuille-de-route.md#fusionne)).
 
-- Il n’est accessible que depuis le LAN ou le VPN.
+- Il est privé : accessible uniquement depuis le réseau local ou le VPN.
 - Il clone le dépôt public, et le sous-module des secrets avec un accès en lecture seule limité à ce seul dépôt.
 - Il se connecte aux hôtes avec sa propre clé SSH, autorisée sur le compte d’automatisation comme celle de l’ordinateur portable.
 - Chaque playbook a deux modèles de tâche : un aperçu (`--check --diff`) et une exécution, lancés à la main.
 - Le provisionnement de Zitadel (OpenTofu) reste lancé depuis l’ordinateur portable.
+
+## 🌐 Ce site {#ce-site}
+
+Ce site est construit avec [VitePress](https://vitepress.dev/) dans le dépôt [Infrastructure_website](https://github.com/AlixANNERAUD/Infrastructure_website), indépendant du dépôt Infrastructure : aucun déploiement Ansible n’est nécessaire pour le mettre à jour. Après chaque fusion sur `main`, GitHub Actions le construit et le publie sur GitHub Pages ; la publication peut aussi être lancée à la main depuis l’onglet **Actions** du dépôt.
+
+Pour proposer une modification, créer une branche, puis, depuis la racine du dépôt :
+
+```bash
+npm ci             # dépendances
+npm run docs:dev   # serveur local, qui affiche l’adresse à ouvrir
+npm run check      # vérification Prettier, puis construction du site
+```
+
+`npm run docs:build` puis `npm run docs:preview` montrent le résultat de production. Les sources sont dans `src` ; une nouvelle page de documentation s’ajoute à `src/documentation/index.md` et à la barre latérale de `.vitepress/config.mts`. Ouvrir ensuite une pull request vers `main`.

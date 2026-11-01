@@ -29,21 +29,21 @@ Chaque hôte a un seul point d’entrée web, Traefik. Les protections communes 
 
 ### 🧱 CrowdSec {#crowdsec}
 
-[CrowdSec](https://www.crowdsec.net/) lit le journal d’accès de Traefik, détecte les comportements hostiles (balayages, tentatives de connexion en force, recherche de vulnérabilités connues) et bannit les adresses en cause. Il reçoit aussi la liste de blocage communautaire de CrowdSec. Un module de Traefik (_bouncer_) consulte ces décisions et refuse les adresses bannies avant toute autre étape, sur toutes les routes, internes comprises.
+[CrowdSec](https://www.crowdsec.net/) lit le journal d’accès de Traefik, détecte les comportements hostiles (balayages, tentatives de connexion en force, recherche de vulnérabilités connues) et bannit les adresses en cause. Il reçoit aussi la liste de blocage communautaire de CrowdSec. Un module de Traefik (_bouncer_) consulte ces décisions et refuse les adresses bannies avant toute autre étape, sur toutes les routes, privées comprises.
 
-- Le LAN et le VPN ne sont jamais bannis : ils sont exclus des décisions de CrowdSec, et le module les laisse toujours passer.
+- Le réseau local et le VPN ne sont jamais bannis : ils sont exclus des décisions de CrowdSec, et le module les laisse toujours passer.
 - Derrière Cloudflare, c’est l’adresse réelle du visiteur qui est vérifiée, pas celle de Cloudflare.
 - L’API de CrowdSec n’est joignable que par Traefik, sur un réseau Docker réservé ; CrowdSec lit les journaux par une vue en lecture seule de l’API Docker, limitée à la liste des conteneurs et à leurs journaux.
 
-CrowdSec est fusionné dans le dépôt pour Luxembourg et en cours de déploiement ; Bruxelles suivra.
+CrowdSec est fusionné dans le dépôt pour Luxembourg, à déployer ; Bruxelles suivra (voir la [feuille de route](feuille-de-route.md)).
 
-### 🏠 Services internes {#services-internes}
+### 🏠 Services privés {#services-prives}
 
-Les services privés n’acceptent que les connexions venant du LAN ou du VPN NetBird, grâce à une liste d’accès appliquée par Traefik. Elle vérifie l’adresse de la connexion elle-même, et non les en-têtes transmis : faire confiance aux en-têtes de Cloudflare, pour transmettre l’adresse du visiteur aux applications, ne l’élargit pas. Leur nom DNS pointe en plus vers une adresse du réseau local. Les outils d’administration en font partie : consoles des serveurs et des conteneurs, tableau de bord de Traefik, supervision, déploiement, coffre de signature de Xila.
+Les services privés n’acceptent que les connexions venant du réseau local ou du VPN NetBird, grâce à une liste d’accès appliquée par Traefik. Elle vérifie l’adresse de la connexion elle-même, et non les en-têtes transmis : faire confiance aux en-têtes de Cloudflare, pour transmettre l’adresse du visiteur aux applications, ne l’élargit pas. Leur nom DNS pointe en plus vers une adresse du réseau local. Les outils d’administration en font partie : consoles des serveurs et des conteneurs, tableau de bord de Traefik, supervision, déploiement, coffre de signature de Xila.
 
 ### ⏱️ Limitation des connexions {#limitation}
 
-Sur les services publics, les formulaires de connexion sont limités par adresse cliente : au-delà d’un certain nombre de tentatives, Traefik répond `429 Too Many Requests`. Seuls les envois de formulaires de connexion sont comptés, si bien que la synchronisation des applications (Nextcloud, Jellyfin, Home Assistant, Bitwarden…) n’est pas ralentie ; les limites propres à chaque application s’ajoutent à celle-ci. Sont concernés : Zitadel, Vaultwarden, Nextcloud, Jellyfin, Home Assistant, Tolgee et NetBird. Cette limitation est fusionnée dans le dépôt et en cours de déploiement.
+Sur les services publics, les formulaires de connexion sont limités par adresse cliente : au-delà d’un certain nombre de tentatives, Traefik répond `429 Too Many Requests`. Seuls les envois de formulaires de connexion sont comptés, si bien que la synchronisation des applications (Nextcloud, Jellyfin, Home Assistant, Bitwarden…) n’est pas ralentie ; les limites propres à chaque application s’ajoutent à celle-ci. Sont concernés : Zitadel, Vaultwarden, Nextcloud, Jellyfin, Home Assistant, Tolgee et NetBird. Cette limitation est fusionnée dans le dépôt, à déployer.
 
 ## 🪪 Authentification unique {#authentification}
 
@@ -59,17 +59,19 @@ Sur les services publics, les formulaires de connexion sont limités par adresse
 
 ## 🗝️ Secrets {#secrets}
 
-- Les secrets sont chiffrés avec Ansible Vault dans un sous-module privé ; le mot de passe du coffre reste dans le trousseau du système (voir [Déploiement](deploiement.md#secrets)).
-- Sur les serveurs, ils ne sont écrits que dans le fichier `.env` du service concerné, lisible par son seul propriétaire, et jamais affichés dans les journaux de déploiement.
-- L’état d’OpenTofu, qui contient les identifiants des applications Zitadel, est chiffré ; OpenTofu refuse de l’écrire en clair.
-- L’intégration continue n’a aucun secret : elle travaille sur des fichiers de coffre vides.
+- **Hors du dépôt public :** mots de passe, jetons et clés d’API sont dans un sous-module Git privé, chiffrés avec [Ansible Vault](https://docs.ansible.com/ansible/latest/vault_guide/index.html).
+- **Mot de passe du coffre :** il reste dans le trousseau du système (Secret Service, Keychain ou Credential Locker). Il est demandé une fois par machine, puis lu par Ansible au besoin.
+- **Sur les serveurs :** chaque secret n’est écrit que dans le fichier `.env` du service qui l’utilise, lisible par son seul propriétaire, et les tâches qui les manipulent n’affichent rien dans les journaux de déploiement.
+- **État d’OpenTofu :** il contient les identifiants des applications Zitadel ; il est chiffré, et OpenTofu refuse de l’écrire en clair.
+- **Intégration continue :** elle n’a aucun secret et analyse les playbooks avec des fichiers de coffre vides.
+- **Modification :** un secret change d’abord dans le dépôt privé, puis le dépôt public met à jour la référence du sous-module.
 
 ## 🧩 Cloisonnement des réseaux {#cloisonnement}
 
 - **Bases de données :** les bases des services déployés par Ansible sont sur des réseaux Docker internes, sans route vers Internet ; celles que l’outil de sauvegarde des bases doit joindre partagent en plus un réseau avec lui. Un réseau par base de données, pour que les bases ne se voient plus entre elles, est prévu.
 - **Réseaux réservés :** CrowdSec et Traefik partagent un réseau qui leur est propre ; la supervision lit les métriques de Traefik sur un point d’entrée qui n’est jamais publié.
-- **Ports publiés :** Docker publie les ports en contournant le pare-feu de l’hôte. Seul Traefik publie les ports web ; tout autre service passe par lui.
-- **Réseaux proxy par application** _(prévu)_ : chaque application aura son propre petit réseau partagé uniquement avec Traefik, pour qu’une application compromise ne puisse pas joindre les autres. Le plan d’adressage est décrit dans la page [Réseau](reseau.md#isolation-des-applications).
+- **Ports publiés :** Docker publie les ports en contournant le pare-feu de l’hôte. Seul Traefik publie les ports web ; tout autre service passe par lui, et le déploiement de Traefik le vérifie.
+- **Réseaux proxy par application** _(prévu)_ : chaque application aura son propre petit réseau partagé uniquement avec Traefik, pour qu’une application compromise ne puisse pas joindre les autres. La cible et son plan d’adressage sont décrits dans la page [Réseau](reseau.md#isolation-des-applications).
 - **Conteneurs :** Traefik et CrowdSec tournent sans possibilité d’élévation de privilèges (`no-new-privileges`), et les journaux de tous les conteneurs sont plafonnés pour ne pas remplir les disques.
 
 ## 🔄 Mises à jour {#mises-a-jour}

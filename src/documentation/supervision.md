@@ -27,15 +27,15 @@ flowchart LR
 
 - **Services :** chaque service est interrogé toutes les 10 minutes. Le code de réponse doit être `200` et, quand le service expose un point de santé, le contenu de la réponse est vérifié aussi (base de données joignable, état « OK »…).
 - **Certificats :** chaque vérification exige un certificat TLS valable encore au moins deux semaines. Un renouvellement automatique qui échoue est ainsi signalé bien avant l’expiration.
-- **Hôtes :** Bruxelles et Luxembourg sont testés par ping chaque minute.
-- **Groupes :** services, administration (outils internes) et infrastructure (hôtes). Les outils internes de Luxembourg sont vérifiés directement depuis le réseau Docker, puisque la liste d’accès interne de Traefik n’accepte que le LAN et le VPN.
-- **Alertes :** Gatus prévient Home Assistant dès le premier échec, puis à nouveau quand le service est rétabli. Home Assistant relaie la notification.
+- **Hôtes :** Bruxelles et Luxembourg sont testés chaque minute par ping (ICMP).
+- **Groupes :** services, administration (outils internes) et infrastructure (hôtes). Les outils internes de Luxembourg sont vérifiés directement depuis le réseau Docker, puisque la liste d’accès interne de Traefik n’accepte que le réseau local et le VPN.
+- **Alertes :** Gatus prévient Home Assistant dès le premier échec, puis à nouveau quand le service est rétabli.
 
 L’historique est conservé dans une base PostgreSQL, sur un réseau Docker interne. Une seconde instance, avec la même configuration de base, sert la page d’état du domaine distinct `dera.page`.
 
 ## 🔭 Vigie {#vigie}
 
-Vigie réunit [VictoriaMetrics](https://victoriametrics.com/), qui collecte et stocke les métriques, et [Grafana](https://grafana.com/), qui les affiche et déclenche les alertes. Elle n’est accessible que depuis le LAN ou le VPN.
+Vigie réunit [VictoriaMetrics](https://victoriametrics.com/), qui collecte et stocke les métriques, et [Grafana](https://grafana.com/), qui les affiche et déclenche les alertes. Elle est privée : accessible uniquement depuis le réseau local ou le VPN.
 
 - **Sources :** les métriques des deux instances de Traefik (requêtes, codes de réponse, durées, par service et par hôte). Celles de Luxembourg sont lues sur un point d’entrée réservé au réseau Docker, jamais publié ; celles de Bruxelles passent par le VPN NetBird et la liste d’accès interne de Bruxelles.
 - **Conservation :** une mesure toutes les 30 secondes, gardée trois mois.
