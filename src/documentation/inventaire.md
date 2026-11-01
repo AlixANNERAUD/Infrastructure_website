@@ -6,9 +6,9 @@ Ce document fournit un inventaire des composants de l'infrastructure, notamment 
 
 ### Bruxelles
 
-Ce serveur, installé dans la maison au Houlme, héberge la majorité de mes services personnels. TrueNAS Apps et Ansible sont utilisés pour le déploiement et la gestion. Il a été conçu dans une logique d'efficacité énergétique (~20 W au repos) et de fiabilité.
+Ce serveur, installé sur le site principal, héberge la majorité de mes services personnels. TrueNAS Apps et Ansible sont utilisés pour le déploiement et la gestion. Il a été conçu dans une logique d'efficacité énergétique (~20 W au repos) et de fiabilité.
 
-Home Assistant y fonctionne dans un conteneur Docker connecté au réseau local via macvlan (`192.168.0.24`).
+Home Assistant y fonctionne dans un conteneur Docker connecté au réseau local via macvlan.
 
 - Système d'exploitation : [TrueNAS Community Edition](https://www.truenas.com/truenas-community-edition/) (basé sur Debian)
 - Carte mère : ASRock B550M-ITX/ac (format Mini-ITX, socket AM4)
@@ -37,150 +37,72 @@ Ce serveur est hébergé sur Oracle Cloud Infrastructure (OCI) et sert aux servi
 
 ### Pristina
 
-Serveur Debian de sauvegarde virtualisé sur l'ordinateur Athènes, dans l'atelier au Houlme. Il reçoit une réplication des données de Bruxelles ; son emplacement dans un bâtiment distinct ne le protège pas d'un sinistre touchant toute la zone du Houlme.
+Serveur Debian de sauvegarde virtualisé sur l'ordinateur [Athènes](#athenes), dans le bâtiment annexe du site principal. Il reçoit une réplication des données de Bruxelles ; son emplacement dans un bâtiment distinct ne le protège pas d'un sinistre touchant tout le site.
 
 ## 🌐 Réseau
 
 ### Berlin
 
-Routeur de l'opérateur Orange (Livebox S) relié à un ONT externe pour la FTTH (1 Gbps symétrique).
+Routeur fibre du site principal (FTTH, 1 Gbit/s symétrique) ; sert le DHCP du site.
 
 ### Minsk
 
-Routeur SFR Box 7 (NB6VAC) de l'appartement à Rouen.
+Routeur du site secondaire ; sert le DHCP du site.
 
 ### Budapest
 
-Routeur Wi-Fi de l'atelier, situé en dehors de la maison. Il est également utilisé pour connecter Skopje, Kiev et Athènes au réseau local.
-
-- Modèle : TP-Link AX1500
-- Connectivité : Wi-Fi 6 (802.11ax) + 4 ports Gigabit Ethernet
-
-### Chisinau
-
-Antenne Wi-Fi extérieure déportée, à propagation conique, pour fournir une connexion aux caméras de surveillance.
-
-- Modèle : TP-Link CPE610
-- Fréquence : 5 GHz
-- Portée : Jusqu'à 10 km (en ligne de vue)
+Routeur Wi-Fi du bâtiment annexe, en pont : il relie au réseau local les équipements de l'annexe.
 
 ### Sofia
 
-Switch (L2) pour connecter les caméras de surveillance et Budapest à Berlin.
+Switch (L2) qui relie le bâtiment annexe au routeur [Berlin](#berlin).
 
-- Modèle : Linksys
-- Ports : 5 ports Gigabit Ethernet
+## 📷 Caméras {#cameras}
 
-## 📷 Caméras
-
-### Nicosie
-
-Caméra de surveillance extérieure pour surveiller le jardin.
-
-- Modèle : Reolink RLC-540A
-- Résolution : 4 MP (2560 x 1440)
-- Connectivité : Ethernet (PoE)
-
-### Amsterdam
-
-Caméra de surveillance extérieure pour surveiller le portail.
-
-- Modèle : Reolink RLC-410W
-- Résolution : 4 MP (2560 x 1440)
-- Connectivité : Wi-Fi
-
-### Skopje
-
-Caméra de surveillance extérieure pour surveiller la cour.
-
-- Modèle : Reolink RLC-410W
-- Résolution : 4 MP (2560 x 1440)
-- Connectivité : Wi-Fi
+Des caméras de surveillance extérieures sont reliées au réseau local du site principal.
 
 ## 🖨️ Imprimantes
 
 ### Madrid
 
-Imprimante à jet d'encre pour les impressions occasionnelles à la maison.
-
-- Modèle : Epson EcoTank ET-2600
-- Connectivité : Wi-Fi, USB
+Imprimante à jet d'encre pour les impressions occasionnelles.
 
 ### Kiev
 
-Imprimante laser monochrome pour les impressions plus fréquentes dans l'atelier.
-
-- Modèle : HP LaserJet P2055dn
-- Connectivité : Ethernet, USB
+Imprimante laser du bâtiment annexe, pour les impressions plus fréquentes.
 
 ## 💻 Ordinateurs
 
 ### Paris
 
-Ordinateur de bureau situé dans l'appartement à Rouen, utilisé pour les tâches quotidiennes, le développement et d'autres activités nécessitant davantage de puissance de calcul.
-
-- Système d'exploitation : Debian 13 "Trixie"
-- Processeur : AMD Ryzen 9 3900X
-- Carte mère : MSI X570 Gaming Plus
-- Mémoire : 64 Go DDR4
-- Boîtier : Cooler Master
-- Stockage :
-  - Crucial P3 Plus (SSD - 1 To - NVMe - Système d'exploitation)
-  - HGST (HDD - 1 To - Stockage de données)
-  - Pool ZFS Mirror (Sauvegarde Bruxelles) :
-    - Western Digital Green (HDD - 2 To)
-    - Seagate Barracuda (HDD - 2 To)
+Ordinateur de bureau du site secondaire, utilisé pour les tâches quotidiennes et le développement. Il reçoit aussi une copie des données de Bruxelles sur un pool ZFS en miroir (voir [sauvegardes](./sauvegardes.md)).
 
 ### Belgrade
 
-- Système d'exploitation : Windows 11
-- Modèle : HP ProBook 445
-- Processeur : AMD Ryzen 5 7530U
-- Mémoire : 16 Go DDR4
-- Stockage : SSSTC CL4-8D512 (SSD - 256 Go - NVMe)
+Ordinateur portable.
 
 ### Londres
 
 Ordinateur portable utilisé pour les déplacements, le développement et la bureautique.
 
-- Système d'exploitation : Debian 13 "Trixie"
-- Modèle : HP EliteBook 840 14 inch G10 Notebook PC
-- Processeur : Intel Core i7-1370P (14 cœurs, 20 threads)
-- Mémoire : 32 Go
-- Stockage : WD PC SN740 (SSD - 512 Go - NVMe)
-
 ### Athènes
 
-Ordinateur fixe de l'atelier.
-
-- Système d'exploitation : Windows 11 Pro
-- Modèle : Dell Optiplex 3050 SFF
-- Processeur : Intel Core i5-6500
-- Mémoire : 8 Go DDR4
-- Stockage :
-  - Samsung 860 EVO (SSD - 512 Go - SATA - Système d'exploitation)
-  - Seagate Barracuda (HDD - 2 To - Pool ZFS Stripe - Sauvegarde Bruxelles)
+Ordinateur fixe du bâtiment annexe ; il héberge la machine virtuelle [Pristina](#pristina).
 
 ### Rome
 
 Ordinateur portable.
 
-- Système d'exploitation : Windows 11 Pro
-- Modèle : Xiaomi RedmiBook 14 II
-- Processeur : Intel Core i5-11300H
-- Mémoire : 16 Go DDR4
-- Stockage : Samsung 980 (SSD - 512 Go - NVMe)
-
 ## ➕ Autres équipements
 
 ### 📺 Bucarest
 
-Google TV Chromecast avec Google TV (HD) pour la télévision de la chambre.
+Boîtier TV.
 
 ### 📺 Berne
 
-Apple TV 4K (2e génération) pour la télévision du salon.
+Boîtier TV.
 
 ### 🌞 Bratislava
 
-Module de collecte de données de production d'énergie solaire (panneau Beem On).
+Module de collecte des données de production d'énergie solaire.
