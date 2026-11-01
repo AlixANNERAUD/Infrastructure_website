@@ -33,8 +33,8 @@ const configuration = defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: "Acceuil", link: "/" },
-      { text: "État", link: "/etat/" },
+      { text: "Accueil", link: "/" },
+      { text: "État", link: "/etat" },
       {
         text: "Documentation",
         link: "/documentation/",
@@ -44,11 +44,16 @@ const configuration = defineConfig({
 
     sidebar: {
       "/documentation": [
+        { text: "Architecture", link: "/documentation/architecture" },
+        { text: "Déploiement", link: "/documentation/deploiement" },
+        { text: "Sécurité", link: "/documentation/securite" },
+        { text: "Supervision", link: "/documentation/supervision" },
         { text: "Exploitation et accès", link: "/documentation/exploitation" },
         { text: "Inventaire", link: "/documentation/inventaire" },
         { text: "DNS", link: "/documentation/dns" },
         { text: "Réseau", link: "/documentation/reseau" },
         { text: "Sauvegardes", link: "/documentation/sauvegardes" },
+        { text: "Feuille de route", link: "/documentation/feuille-de-route" },
       ],
     },
     search: {
@@ -66,7 +71,7 @@ const configuration = defineConfig({
     ],
     editLink: {
       pattern:
-        "https://github.com/AlixANNERAUD/Infrastructure/edit/main/services/website/src/:path",
+        "https://github.com/AlixANNERAUD/Infrastructure_website/edit/main/src/:path",
       text: "Proposer une modification sur GitHub",
     },
   },
