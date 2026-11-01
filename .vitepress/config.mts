@@ -44,16 +44,41 @@ const configuration = defineConfig({
 
     sidebar: {
       "/documentation": [
-        { text: "Architecture", link: "/documentation/architecture" },
-        { text: "Déploiement", link: "/documentation/deploiement" },
-        { text: "Sécurité", link: "/documentation/securite" },
-        { text: "Supervision", link: "/documentation/supervision" },
-        { text: "Exploitation et accès", link: "/documentation/exploitation" },
-        { text: "Inventaire", link: "/documentation/inventaire" },
-        { text: "DNS", link: "/documentation/dns" },
-        { text: "Réseau", link: "/documentation/reseau" },
-        { text: "Sauvegardes", link: "/documentation/sauvegardes" },
-        { text: "Feuille de route", link: "/documentation/feuille-de-route" },
+        { text: "Vue d’ensemble", link: "/documentation/" },
+        {
+          text: "Utiliser",
+          items: [
+            { text: "Accès aux services", link: "/documentation/exploitation" },
+            { text: "État des services", link: "/etat" },
+          ],
+        },
+        {
+          text: "Comprendre",
+          items: [
+            { text: "Architecture", link: "/documentation/architecture" },
+            { text: "Réseau", link: "/documentation/reseau" },
+            { text: "DNS", link: "/documentation/dns" },
+            { text: "Sécurité", link: "/documentation/securite" },
+          ],
+        },
+        {
+          text: "Exploiter",
+          items: [
+            { text: "Déploiement", link: "/documentation/deploiement" },
+            { text: "Supervision", link: "/documentation/supervision" },
+            { text: "Sauvegardes", link: "/documentation/sauvegardes" },
+          ],
+        },
+        {
+          text: "Référence",
+          items: [
+            { text: "Inventaire", link: "/documentation/inventaire" },
+            {
+              text: "Feuille de route",
+              link: "/documentation/feuille-de-route",
+            },
+          ],
+        },
       ],
     },
     search: {

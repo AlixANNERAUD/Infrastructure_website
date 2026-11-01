@@ -1,6 +1,8 @@
 # 🗺️ Réseau
 
-## 🌎 Schéma général
+Cette page décrit les réseaux de l’infrastructure : sites, VPN et réseaux Docker. Les équipements eux-mêmes sont listés dans l’[inventaire](inventaire.md).
+
+## 🌎 Schéma général {#schema}
 
 ```mermaid
 flowchart TB
@@ -31,9 +33,9 @@ flowchart TB
 	end
 ```
 
-## 🧭 Détail
+> **DHCP :** Berlin et Minsk servent chacun le DHCP de leur réseau local respectif. Les autres équipements réseau fonctionnent en pont L2, sans routage, NAT, VLAN ni DHCP.
 
-### 🧩 Plan d’adressage commun
+## 🧩 Plan d’adressage des sites {#plan-adressage}
 
 Plan par site : `192.168.A.0/24` (`A = 0` sur le site principal, `A = 1` sur le site secondaire). Sous-réseaux fonctionnels proposés, compatibles avec les adresses attribuées :
 
@@ -45,13 +47,13 @@ Plan par site : `192.168.A.0/24` (`A = 0` sur le site principal, `A = 1` sur le 
 | Imprimantes et autres équipements statiques | `192.168.A.48/28`  | `192.168.A.49`–`192.168.A.62`   |
 | Clients DHCP                                | `192.168.A.128/25` | `192.168.A.129`–`192.168.A.254` |
 
-> Ces sous-réseaux fonctionnels sont proposés, pas configurés : le LAN du site principal et son macvlan restent en `192.168.0.0/24`. Leur séparation nécessiterait routage et passerelles dédiées, éventuellement des VLAN.
+> Ces sous-réseaux fonctionnels sont proposés, pas configurés : le réseau local du site principal et son macvlan restent en `192.168.0.0/24`. Leur séparation nécessiterait routage et passerelles dédiées, éventuellement des VLAN.
 
-### 🔐 VPN mesh NetBird {#vpn-mesh-netbird}
+## 🔐 VPN NetBird {#vpn-mesh-netbird}
 
-NetBird utilise `100.64.0.0/24` (hôtes `100.64.0.1`–`100.64.0.254`), indépendamment des réseaux locaux.
+NetBird utilise `100.64.0.0/24` (hôtes `100.64.0.1`–`100.64.0.254`), indépendamment des réseaux locaux. Son rôle est décrit dans la page [Architecture](architecture.md#vpn).
 
-### 🐳 Réseaux Docker {#reseaux-docker}
+## 🐳 Réseaux Docker {#reseaux-docker}
 
 Docker attribue un sous-réseau à chaque réseau créé sans sous-réseau explicite, à partir de ses _pools d’adresses_. Le plan découpe la plage privée `172.16.0.0/12` ([RFC 1918](https://www.rfc-editor.org/rfc/rfc1918)) en deux moitiés, identiques sur Bruxelles et Luxembourg :
 
@@ -74,7 +76,7 @@ L’alignement des deux hôtes sur ce plan figure dans la [feuille de route](feu
 >
 > **Pourquoi une plage réservée :** Docker ne permet pas de choisir le pool d’un réseau, et un sous-réseau fixe ne doit chevaucher aucun réseau existant, sinon la création échoue ([Docker](https://docs.docker.com/reference/cli/docker/network/create/)). Les sous-réseaux fixes vivent donc hors du pool automatique. La taille `/24` du pool automatique est la valeur courante ([Docker](https://docs.docker.com/engine/network/), défaut TrueNAS) ; le découpage en deux moitiés est propre à cette infrastructure.
 
-#### Isolation des applications _(prévu)_ {#isolation-des-applications}
+### 🧱 Isolation des applications _(prévu)_ {#isolation-des-applications}
 
 Sur un même réseau Docker, les conteneurs voient tous les ports les uns des autres ([Docker](https://docs.docker.com/engine/network/drivers/bridge/)). Un réseau proxy partagé par toutes les applications permettrait donc à une application compromise de joindre les autres sans passer par Traefik ni par ses protections (liste d’accès interne, CrowdSec, limitation des connexions).
 
@@ -102,42 +104,3 @@ flowchart LR
 ```
 
 > Nextcloud et Jellyfin ne partagent aucun réseau : ils ne peuvent pas se joindre directement. Les noms et emplacements du schéma sont des exemples. Traefik reste relié à tous les réseaux proxy : sa compromission donnerait toujours accès à toutes les applications.
-
-### 🗼 Infrastructure
-
-> **DHCP :** Berlin et Minsk servent chacun le DHCP de leur réseau local respectif. Les autres équipements réseau fonctionnent en pont L2, sans routage, NAT, VLAN ni DHCP.
-
-| Nom                                  | Description                             |
-| ------------------------------------ | --------------------------------------- |
-| [Berlin](./inventaire.md#berlin)     | Routeur fibre du site principal         |
-| [Minsk](./inventaire.md#minsk)       | Routeur du site secondaire              |
-| [Sofia](./inventaire.md#sofia)       | Switch du bâtiment annexe               |
-| [Budapest](./inventaire.md#budapest) | Routeur Wi-Fi du bâtiment annexe (pont) |
-
-### 🌐 Serveurs
-
-| Nom                                      | Description                                                                      |
-| ---------------------------------------- | -------------------------------------------------------------------------------- |
-| [Bruxelles](./inventaire.md#bruxelles)   | Serveur TrueNAS                                                                  |
-| [Pristina](./inventaire.md#pristina)     | Serveur Debian de sauvegarde (virtualisé sur [Athènes](./inventaire.md#athenes)) |
-| [Luxembourg](./inventaire.md#luxembourg) | Serveur Oracle Cloud, avec une adresse privée sur une interface loopback         |
-| Home Assistant                           | Conteneur macvlan hébergé sur [Bruxelles](./inventaire.md#bruxelles)             |
-
-### 🎥 Caméras
-
-Des [caméras de surveillance extérieures](./inventaire.md#cameras) sont reliées au réseau local du site principal.
-
-### 🖨️ Imprimantes
-
-| Nom                              | Description                         |
-| -------------------------------- | ----------------------------------- |
-| [Madrid](./inventaire.md#madrid) | Imprimante à jet d’encre            |
-| [Kiev](./inventaire.md#kiev)     | Imprimante laser du bâtiment annexe |
-
-### ➕ Autre - statique
-
-| Nom                            | Description          |
-| ------------------------------ | -------------------- |
-| [Paris](./inventaire.md#paris) | Ordinateur de bureau |
-
-_Voir [inventaire.md](./inventaire.md) pour la liste détaillée complète et les descriptions individualisées._

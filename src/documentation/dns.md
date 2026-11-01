@@ -1,8 +1,8 @@
 # 📇 DNS
 
-Tous les enregistrements DNS sont gérés via [Cloudflare](https://www.cloudflare.com/), qui offre une interface fiable et facile à utiliser pour gérer les paramètres DNS. Ils sont décrits dans le dépôt et appliqués par Ansible : aucun enregistrement n’est modifié à la main.
+Les zones DNS sont hébergées chez [Cloudflare](https://www.cloudflare.com/). Leurs enregistrements sont décrits dans le dépôt Infrastructure et appliqués par Ansible, plutôt que saisis à la main dans l’interface.
 
-## 🎯 Noms des hôtes
+## 🎯 Noms des hôtes {#noms-hotes}
 
 La plupart des services utilisent des enregistrements CNAME pointant vers le nom de l’hôte qui les sert :
 
@@ -13,7 +13,7 @@ La plupart des services utilisent des enregistrements CNAME pointant vers le nom
 | global.bruxelles.anneraud.fr  | Accès réseau global à Bruxelles  | Public | Bruxelles  | Dynamique   |
 | global.luxembourg.anneraud.fr | Accès réseau global à Luxembourg | Public | Luxembourg | Statique    |
 
-Un service **public** pointe vers `global.<hôte>.anneraud.fr`, joignable depuis Internet. Un service **privé** pointe vers `local.<hôte>.anneraud.fr`, une adresse du réseau local : il n’est joignable que depuis le LAN ou le [VPN NetBird](reseau.md#vpn-mesh-netbird), et Traefik le protège en plus par une [liste d’accès interne](securite.md#services-internes). L’adresse publique de Bruxelles change : un client DNS dynamique tient `global.bruxelles.anneraud.fr` à jour.
+Un service **public** pointe vers `global.<hôte>.anneraud.fr`, joignable depuis Internet. Un service **privé** pointe vers `local.<hôte>.anneraud.fr`, une adresse du réseau local : il n’est joignable que depuis le réseau local ou le [VPN NetBird](reseau.md#vpn-mesh-netbird), et Traefik le protège en plus par une [liste d’accès interne](securite.md#services-prives). L’adresse publique de Bruxelles change : un client DNS dynamique tient `global.bruxelles.anneraud.fr` à jour.
 
 ## ⚙️ Automatisation {#automatisation}
 
