@@ -60,7 +60,7 @@ features:
     target: _blank
   - icon: 🌎
     title: Traduction (Tolgee)
-    details: Plateforme de traduction. Nécessite un VPN.
+    details: Plateforme de traduction.
     link: https://translate.anneraud.fr
     linkText: Visiter Tolgee
     rel: external
@@ -116,7 +116,7 @@ features:
     target: _blank
   - icon: 📝
     title: Notes (Docmost)
-    details: Plateforme de documentation. Nécessite un VPN.
+    details: Plateforme de documentation.
     link: https://notes.anneraud.fr
     linkText: Visiter Notes
     rel: external
@@ -179,7 +179,7 @@ features:
     target: _blank
   - icon: 🖥️
     title: Parc (MeshCentral)
-    details: Gestion à distance des appareils.
+    details: Gestion à distance des appareils. Nécessite un VPN.
     link: https://parc.anneraud.fr
     linkText: Visiter MeshCentral
     rel: external
