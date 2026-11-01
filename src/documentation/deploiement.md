@@ -87,7 +87,7 @@ Chaque image Docker est figée sur une version exacte : jamais `latest`, jamais 
 
 ## 🤖 Semaphore {#semaphore}
 
-[Semaphore](https://semaphoreui.com/) est une interface web pour lancer les playbooks depuis Bruxelles, sans passer par l’ordinateur portable. Son service a été ajouté au dépôt le 1er novembre 2026 ; sa mise en service est à venir.
+[Semaphore](https://semaphoreui.com/) est une interface web pour lancer les playbooks depuis Bruxelles, sans passer par l’ordinateur portable. Son service est en préparation dans une pull request du dépôt ; sa mise en service est à venir.
 
 - Il n’est accessible que depuis le LAN ou le VPN.
 - Il clone le dépôt public, et le sous-module des secrets avec un accès en lecture seule limité à ce seul dépôt.
