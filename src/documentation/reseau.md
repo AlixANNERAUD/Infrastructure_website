@@ -51,7 +51,7 @@ Plan par site : `192.168.A.0/24` (`A = 0` sur le site principal, `A = 1` sur le 
 
 ## 🔐 VPN NetBird {#vpn-mesh-netbird}
 
-NetBird utilise `100.64.0.0/24` (hôtes `100.64.0.1`–`100.64.0.254`), indépendamment des réseaux locaux. Son rôle est décrit dans la page [Architecture](architecture.md#vpn).
+NetBird utilise `100.64.0.0/16` (hôtes `100.64.0.1`–`100.64.254.254`), indépendamment des réseaux locaux. Son rôle est décrit dans la page [Architecture](architecture.md#vpn).
 
 ## 🐳 Réseaux Docker {#reseaux-docker}
 
