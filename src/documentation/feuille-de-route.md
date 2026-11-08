@@ -4,7 +4,7 @@
 
 ## ✅ Fusionné, à déployer {#fusionne}
 
-Rien en attente : tout ce qui est fusionné est déployé.
+- **CrowdSec sur Bruxelles**, sur le même modèle que Luxembourg (voir [Sécurité](securite.md#crowdsec)) : déployer Traefik, puis CrowdSec sur Bruxelles, puis Vigie.
 
 ## 🗓️ Prévu {#prevu}
 
@@ -13,10 +13,6 @@ Rien en attente : tout ce qui est fusionné est déployé.
 1. **Aligner les pools d’adresses des deux hôtes** sur le [plan commun](reseau.md#reseaux-docker) (`172.16.0.0/13` en `/24`, `172.24.0.0/13` réservé), le pool de Luxembourg étant géré par Ansible. Les réseaux existants sont ensuite recréés dans ce plan.
 2. **Réseaux proxy par application** sur les deux hôtes, en commençant par les services publics (Nextcloud, Jellyfin, Home Assistant, Vaultwarden, Matrix), puis les autres. Chaque application ne partage qu’avec Traefik un réseau `/29` interne ; celles qui font confiance aux en-têtes du proxy ne font plus confiance qu’à ce réseau. Voir [Réseau](reseau.md#isolation-des-applications).
 3. **Un réseau par base de données**, à la place du réseau partagé avec l’outil de sauvegarde des bases (Databasus) : l’outil rejoint chaque réseau, mais les bases ne se voient plus entre elles.
-
-### 🛡️ Protection et accès {#protection}
-
-1. **CrowdSec sur Bruxelles**, sur le même modèle que Luxembourg. L’adresse publique de la maison, qui change, et celle de Luxembourg ne sont jamais bannies : CrowdSec les résout lui-même à chaque détection.
 
 ### 💾 Sauvegardes et dépôts {#sauvegardes}
 
