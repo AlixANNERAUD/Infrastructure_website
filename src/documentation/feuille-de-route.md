@@ -4,7 +4,7 @@
 
 ## ✅ Fusionné, à déployer {#fusionne}
 
-- **CrowdSec sur Bruxelles**, sur le même modèle que Luxembourg (voir [Sécurité](securite.md#crowdsec)) : déployer Traefik, puis CrowdSec sur Bruxelles, puis Vigie.
+Rien en attente : tout ce qui est fusionné est déployé.
 
 ## 🗓️ Prévu {#prevu}
 
