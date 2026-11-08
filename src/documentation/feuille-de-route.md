@@ -4,7 +4,7 @@
 
 ## ✅ Fusionné, à déployer {#fusionne}
 
-- **Listes blanches de CrowdSec** (Matrix, Nextcloud, Jellyfin, Jellyseerr, moteurs de recherche) : `mise deploy services/protection/deploy.yml`, sur les deux hôtes.
+Rien en attente : tout ce qui est fusionné est déployé.
 
 ## 🗓️ Prévu {#prevu}
 
