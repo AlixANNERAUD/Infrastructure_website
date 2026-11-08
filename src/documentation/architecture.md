@@ -64,4 +64,4 @@ Les applications OIDC ne sont pas créées à la main : elles sont décrites dan
 - Les rôles attribués dans Zitadel décident des droits dans le service (exemple : la [supervision](supervision.md#connexion)).
 - L’état d’OpenTofu est chiffré (chiffrement natif d’OpenTofu) et conservé avec les autres secrets, hors du dépôt public.
 
-La supervision est la première application raccordée de cette façon ; l’outil de déploiement Semaphore doit suivre (voir la [feuille de route](feuille-de-route.md)).
+La supervision, MCPHub, Paperless et Semaphore sont raccordés de cette façon. La gestion des comptes et le raccordement d’un nouveau service sont décrits dans la page [Authentification](authentification.md).

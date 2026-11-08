@@ -72,6 +72,26 @@ Les alertes sont envoyées à Home Assistant par un webhook, regroupées par ale
 
 Vigie fait aussi tourner le serveur [MCP](https://modelcontextprotocol.io/) officiel de Grafana. Branché sur [MCPHub](https://github.com/samanhappy/mcphub), il permet à un assistant IA d’interroger les métriques et les journaux d’accès, de lire les tableaux de bord et l’état des alertes, par exemple pour retrouver d’où viennent des requêtes suspectes. Il est en lecture seule, lit Grafana avec un compte de service limité à la consultation, et refuse toute requête sans son propre jeton.
 
+### 🔎 Interroger les journaux {#journaux}
+
+Le tableau de bord des journaux Traefik filtre par hôte, adresse cliente, domaine et code de réponse. Pour aller plus loin, **Explore → VictoriaLogs** accepte toute requête [LogsQL](https://docs.victoriametrics.com/victorialogs/logsql/), par exemple :
+
+```
+ClientHost:="203.0.113.7" DownstreamStatus:=200 | fields _time, RequestHost, RequestPath, DownstreamContentSize, RouterName, request_User-Agent
+RequestHost:="simrepo.dera.page" DownstreamStatus:>=400 | stats by (DownstreamStatus) count()
+```
+
+Un [assistant IA](assistants.md#grafana) pose les mêmes requêtes par le serveur MCP de Grafana.
+
+### 🧰 Exploitation {#exploitation}
+
+- **Coffre :** `vault/vigie/vault.yml` contient `vigie_grafana_admin_password` et `vigie_home_assistant_webhook_id`. Le mot de passe administrateur ne sert qu’au premier démarrage de Grafana ; pour le changer ensuite, `docker exec -it vigie-grafana-1 grafana cli admin reset-admin-password <mot de passe>` sur Luxembourg, puis mettre à jour le coffre.
+- **Home Assistant :** une automatisation à déclencheur webhook, d’identifiant `vigie_home_assistant_webhook_id`, avec `local_only: false` : Grafana l’appelle par `maison.anneraud.fr` depuis Luxembourg.
+- **Déploiement :** `mise deploy services/vigie/deploy.yml`, avec mise, puisqu’il provisionne aussi l’application Zitadel de Grafana. Il télécharge l’extension VictoriaLogs de Grafana, vérifiée par sa somme de contrôle.
+- **Nouvel hôte :** déployer <RepositoryReference path="services/metriques" /> sur l’hôte (collecteurs et Vector), puis Vigie, qui ajoute ses cibles. Un hôte distant expose ses collecteurs par son Traefik (`metriques_host` dans ses variables) ; son déploiement envoie un lot vide à Vigie et s’arrête en expliquant un refus (`403` : adresse hors de la liste d’accès de Luxembourg ; pas de réponse : Luxembourg injoignable par le VPN).
+- **Pools ZFS :** leur remplissage, les disques défaillants et les vérifications restent signalés par TrueNAS : garder un service d’alerte configuré dans **TrueNAS → System → Alert Settings**.
+- **Réglages :** durées de conservation des journaux dans <RepositoryReference path="inventory/group_vars/vigie.yml" />, cibles dans <RepositoryReference path="services/vigie/scrape.yml.j2" />, règles d’alerte et tableaux de bord dans <RepositoryReference path="services/vigie/grafana" />.
+
 ### 🪪 Connexion {#connexion}
 
 La connexion à Grafana passe par [Zitadel](architecture.md#authentification). Les membres du rôle `vigie-admin` sont administrateurs, les autres ont un accès en lecture. Se déconnecter de Grafana ferme aussi la session Zitadel.

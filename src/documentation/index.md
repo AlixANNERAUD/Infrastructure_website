@@ -20,15 +20,18 @@ Documentation de l’infrastructure auto-hébergée de la famille Anneraud. Le c
 
 ## 🛠️ Exploiter {#exploiter}
 
-| Page                             | Répond à la question                                                    |
-| -------------------------------- | ----------------------------------------------------------------------- |
-| [🚀 Déploiement](deploiement.md) | Comment un changement passe-t-il du dépôt aux serveurs ?                |
-| [📈 Supervision](supervision.md) | Comment les pannes et les anomalies sont-elles détectées et signalées ? |
-| [🛡️ Sauvegardes](sauvegardes.md) | Où sont copiées les données et comment les restaurer ?                  |
+| Page                                       | Répond à la question                                                    |
+| ------------------------------------------ | ----------------------------------------------------------------------- |
+| [🚀 Déploiement](deploiement.md)           | Comment un changement passe-t-il du dépôt aux serveurs ?                |
+| [🪪 Authentification](authentification.md) | Comment raccorder un service à Zitadel et gérer les comptes ?           |
+| [📈 Supervision](supervision.md)           | Comment les pannes et les anomalies sont-elles détectées et signalées ? |
+| [🛡️ Sauvegardes](sauvegardes.md)           | Où sont copiées les données et comment les restaurer ?                  |
+| [🤖 Assistants IA](assistants.md)          | Comment les assistants IA accèdent-ils aux outils de l’infrastructure ? |
 
 ## 📚 Référence {#reference}
 
-| Page                                       | Contenu                                        |
-| ------------------------------------------ | ---------------------------------------------- |
-| [🗂️ Inventaire](inventaire.md)             | Matériel : serveurs, réseau, périphériques     |
-| [🧭 Feuille de route](feuille-de-route.md) | Travaux fusionnés à déployer et travaux prévus |
+| Page                                       | Contenu                                             |
+| ------------------------------------------ | --------------------------------------------------- |
+| [🧩 Services](services.md)                 | Chaque service : rôle, accès, hôte, déploiement     |
+| [🗂️ Inventaire](inventaire.md)             | Matériel : serveurs, réseau, périphériques          |
+| [🧭 Feuille de route](feuille-de-route.md) | Travaux en attente de déploiement et travaux prévus |

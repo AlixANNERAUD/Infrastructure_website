@@ -53,6 +53,20 @@ Les zones DNS ne sont pas appliquées par `site.yml` : chacune a son propre play
 
 Les playbooks lisent leurs secrets dans un coffre chiffré, dont le mot de passe reste dans le trousseau du système (voir [Sécurité](securite.md#secrets)).
 
+## 🔑 Compte d’automatisation {#compte-automatisation}
+
+Ansible se connecte à chaque hôte avec le compte `ansible` : clé SSH uniquement, `sudo` sans mot de passe, mot de passe verrouillé (les principes sont dans [Sécurité](securite.md#ssh)). Les clés autorisées sont celle de l’ordinateur portable (`automation_laptop_public_key`) et celles des autres contrôleurs (`automation_additional_public_keys`, celle de Semaphore), dans <RepositoryReference path="inventory/group_vars/all.yml" />. Chacune n’est acceptée que depuis les réseaux de `automation_ssh_sources`.
+
+```bash
+mise deploy hosts/bootstrap.yml --limit <hôte>                                # hôte existant
+mise deploy hosts/bootstrap.yml --limit <hôte> -u <vous> --ask-become-pass    # nouvel hôte, ajouté d’abord à l’inventaire
+```
+
+Le playbook durcit aussi `sshd`. Il refuse de s’exécuter si la connexion en cours ne vient pas d’un réseau autorisé ; quand un hôte est injoignable, ou que `sudo` demande un mot de passe, il affiche les commandes à lancer à la main sur cet hôte et passe au suivant.
+
+- **TrueNAS (Bruxelles)** gère ses utilisateurs et son `sshd` dans son interface, qui annulerait des changements faits en SSH : le playbook ne fait que vérifier (hôte joignable, chaque clé avec sa restriction `from=`, `sudo` sans mot de passe, connexion par mot de passe désactivée) et indique quoi changer dans l’interface. Les clés des contrôleurs, qui se connectent depuis des conteneurs du réseau `proxy`, y sont aussi acceptées depuis le sous-réseau actuel de ce réseau.
+- **Changer la clé du portable :** en générer une nouvelle (`ssh-keygen -t ed25519-sk` pour une clé matérielle), remplacer `automation_laptop_public_key` par sa clé publique, puis lancer `mise deploy hosts/bootstrap.yml` sur chaque hôte avec l’ancienne clé, et mettre à jour la ligne des clés autorisées de TrueNAS qu’il affiche.
+
 ## ✅ Intégration continue {#integration-continue}
 
 Chaque pull request et chaque push sur `main` lancent des vérifications sur GitHub Actions. L’intégration continue n’a pas accès aux secrets : les playbooks sont analysés avec des fichiers de coffre vides, ce qui oblige chaque playbook à rester lisible sans eux.
@@ -89,7 +103,33 @@ Chaque image Docker est figée sur une version exacte : jamais `latest`, jamais 
 - Il clone le dépôt public, et le sous-module des secrets avec un accès en lecture seule limité à ce seul dépôt.
 - Il se connecte aux hôtes avec sa propre clé SSH, autorisée sur le compte d’automatisation comme celle de l’ordinateur portable.
 - Chaque playbook a deux modèles de tâche : un aperçu (`--check --diff`) et une exécution, lancés à la main.
-- Le provisionnement de Zitadel (OpenTofu) reste lancé depuis l’ordinateur portable.
+- Le provisionnement de Zitadel (OpenTofu) reste lancé depuis l’ordinateur portable : Semaphore n’a pas OpenTofu, ses exécutions gardent les applications existantes.
+- Il exécute l’ansible-core de son image, qui peut différer de celui de l’intégration continue : le premier aperçu montre les écarts.
+
+### Mise en place {#semaphore-mise-en-place}
+
+`mise deploy services/deploiement/deploy.yml` déploie Semaphore, génère la clé SSH avec laquelle il se connecte aux hôtes (`keys/ansible` dans le dossier du service, à conserver : la supprimer ferait générer une autre paire à autoriser de nouveau) et affiche sa clé publique. Le coffre `vault/deploiement/vault.yml` contient :
+
+| Clé                                                                                                          | Rôle                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deploiement_admin_login`, `deploiement_admin_name`, `deploiement_admin_email`, `deploiement_admin_password` | Compte administrateur local, créé au premier démarrage seulement : le changer ensuite se fait dans l’interface                                                  |
+| `deploiement_access_key_encryption`                                                                          | Clé de chiffrement des clés stockées dans Semaphore (`openssl rand -base64 32`) : la perdre les rend illisibles                                                 |
+| `deploiement_vault_repository_token`                                                                         | Jeton GitHub _fine-grained_ limité au dépôt des secrets, en lecture seule (**Contents: Read-only**), avec une date d’expiration et un rappel pour le renouveler |
+
+Une fois, pour autoriser Semaphore sur les hôtes :
+
+1. Ajouter la clé publique affichée à `automation_additional_public_keys`, puis lancer `mise deploy hosts/bootstrap.yml`.
+2. Sur TrueNAS, ajouter la même clé aux clés autorisées du compte `ansible` (le playbook affiche les lignes exactes). Si le réseau `proxy` de Bruxelles est un jour recréé, relancer `mise deploy hosts/bootstrap.yml --limit bruxelles` et mettre à jour cette ligne.
+
+Une fois, dans l’interface de Semaphore :
+
+1. Créer le projet `Infrastructure`.
+2. Dans le magasin de clés : `ansible` (type SSH, utilisateur `ansible`, contenu de `keys/ansible`, lu sur Bruxelles), `vault` (identifiant vide et mot de passe du coffre Ansible) et `none` (type aucun, pour cloner le dépôt public).
+3. Dépôt : `https://github.com/AlixANNERAUD/Infrastructure.git`, branche `main`, clé `none`. Le sous-module des secrets est cloné avec le jeton en lecture seule que le déploiement donne à Git dans le conteneur.
+4. Inventaire : type fichier, chemin `inventory/hosts.yml`, clé `ansible`.
+5. Modèles de tâche, pour `site.yml` et chaque `services/<service>/deploy.yml`, en deux variantes avec le mot de passe `vault` : aperçu (`["--check", "--diff"]`) et exécution.
+
+Semaphore trouve un compte par son adresse et refuse une connexion Zitadel dont l’adresse appartient à un compte local : avant la première connexion Zitadel, donner une autre adresse à l’administrateur local, puis promouvoir le compte que Zitadel crée.
 
 ## 🌐 Ce site {#ce-site}
 
