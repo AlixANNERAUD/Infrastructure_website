@@ -10,7 +10,7 @@ Cette page explique comment les services passent du [dépôt Infrastructure](htt
 | `hosts/`              | Playbooks propres aux hôtes : compte d’automatisation, réplication, mises à jour                        |
 | `dns/`                | Un playbook par zone DNS Cloudflare (voir [DNS](dns.md))                                                |
 | `inventory/`          | Hôtes, un groupe par service indiquant l’hôte qui le porte, réglages propres à chaque hôte              |
-| `roles/`              | Rôles partagés : `compose_service`, `zitadel_applications`                                              |
+| `roles/`              | Rôles partagés : `compose_service`, `opentofu`, `zitadel`                                               |
 | `opentofu/zitadel/`   | Applications OIDC de Zitadel (voir [Architecture](architecture.md#authentification))                    |
 | `vault/`              | Sous-module privé contenant les secrets chiffrés (voir [Sécurité](securite.md#secrets))                 |
 | `site.yml`            | Importe le playbook de chaque service, Traefik en premier                                               |
@@ -61,11 +61,11 @@ Chaque pull request et chaque push sur `main` lancent des vérifications sur Git
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | yamllint, ansible-lint | Style YAML, bonnes pratiques Ansible (modules complets, `changed_when`, gestionnaires…)                                 |
 | Compose                | `docker compose config` sur chaque service, avec des valeurs factices pour les variables                                |
-| Molecule               | Rôles `compose_service` et `zitadel_applications` exécutés sur des piles de test                                        |
+| Molecule               | Rôles `compose_service` et `zitadel` exécutés sur des piles de test                                                     |
 | OpenTofu               | Formatage et validation de la configuration Zitadel                                                                     |
 | Routes Traefik         | Les routes de Bruxelles sont rendues puis chargées dans un vrai Traefik : chaque routeur doit être actif et conforme    |
-| Supervision            | La supervision est démarrée avec des métriques d’exemple : les règles d’alerte doivent se déclencher comme prévu        |
-| Protection             | CrowdSec et Traefik sont démarrés ensemble : une adresse bannie est refusée, le réseau local et le VPN passent toujours |
+| Supervision            | La supervision est démarrée avec des métriques et des journaux d’exemple : alertes, tableaux de bord et serveur MCP     |
+| Protection             | CrowdSec et Traefik démarrés ensemble : une adresse bannie est refusée, le réseau local et le VPN passent, l’IPv6 aussi |
 
 Une vérification unique, exigée par les règles de la branche `main`, attend le succès de toutes les autres.
 

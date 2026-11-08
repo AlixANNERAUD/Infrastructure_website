@@ -19,5 +19,10 @@
 
 ### 🛡️ Protection et accès {#protection}
 
-1. **CrowdSec sur Bruxelles**, sur le même modèle que Luxembourg.
+1. **CrowdSec sur Bruxelles**, sur le même modèle que Luxembourg. L’adresse publique de la maison, qui change, et celle de Luxembourg ne sont jamais bannies : CrowdSec les résout lui-même à chaque détection.
 2. **Connexion à Semaphore par Zitadel**, à la place de son compte local.
+
+### 💾 Sauvegardes et dépôts {#sauvegardes}
+
+1. **Sauvegarde chiffrée hors site vers Google Drive**, avec [restic](https://restic.net/) à la place de la synchronisation de TrueNAS, trop lente : chaque nuit, un instantané ZFS des jeux de données choisis, dont seules les modifications sont envoyées, et une alerte de Vigie quand une sauvegarde échoue ou date de plus d’un jour et demi.
+2. **Miroirs GitHub automatiques dans Gitea :** chaque dépôt (hors forks) des comptes `AlixANNERAUD` et `xila-project` est copié dans Gitea et resynchronisé, les nouveaux dépôts compris, décrits avec OpenTofu.

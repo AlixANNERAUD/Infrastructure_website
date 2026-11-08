@@ -33,6 +33,7 @@ Chaque hôte a un seul point d’entrée web, Traefik. Les protections communes 
 
 - Le réseau local et le VPN ne sont jamais bannis : ils sont exclus des décisions de CrowdSec, et le module les laisse toujours passer.
 - Derrière Cloudflare, c’est l’adresse réelle du visiteur qui est vérifiée, pas celle de Cloudflare.
+- Les clients IPv6 gardent leur propre adresse : Traefik publie ses ports par un réseau Docker double pile. Sur un réseau IPv4 seul, Docker relaierait chaque client IPv6 depuis une même adresse à lui : un bannissement ou une limite de connexion les toucherait tous à la fois. Le déploiement de Traefik vérifie ce réglage.
 - L’API de CrowdSec n’est joignable que par Traefik, sur un réseau Docker réservé ; CrowdSec lit les journaux par une vue en lecture seule de l’API Docker, limitée à la liste des conteneurs et à leurs journaux.
 
 CrowdSec est fusionné dans le dépôt pour Luxembourg, à déployer ; Bruxelles suivra (voir la [feuille de route](feuille-de-route.md)).
@@ -69,10 +70,10 @@ Sur les services publics, les formulaires de connexion sont limités par adresse
 ## 🧩 Cloisonnement des réseaux {#cloisonnement}
 
 - **Bases de données :** les bases des services déployés par Ansible sont sur des réseaux Docker internes, sans route vers Internet ; celles que l’outil de sauvegarde des bases doit joindre partagent en plus un réseau avec lui. Un réseau par base de données, pour que les bases ne se voient plus entre elles, est prévu.
-- **Réseaux réservés :** CrowdSec et Traefik partagent un réseau qui leur est propre ; la supervision lit les métriques de Traefik sur un point d’entrée qui n’est jamais publié.
+- **Réseaux réservés :** CrowdSec et Traefik partagent un réseau qui leur est propre ; la supervision lit les métriques de Traefik, des hôtes et de CrowdSec sur des réseaux internes ou derrière la liste d’accès interne, sans qu’aucune ne soit publiée.
 - **Ports publiés :** Docker publie les ports en contournant le pare-feu de l’hôte. Seul Traefik publie les ports web ; tout autre service passe par lui, et le déploiement de Traefik le vérifie.
 - **Réseaux proxy par application** _(prévu)_ : chaque application aura son propre petit réseau partagé uniquement avec Traefik, pour qu’une application compromise ne puisse pas joindre les autres. La cible et son plan d’adressage sont décrits dans la page [Réseau](reseau.md#isolation-des-applications).
-- **Conteneurs :** Traefik et CrowdSec tournent sans possibilité d’élévation de privilèges (`no-new-privileges`), et les journaux de tous les conteneurs sont plafonnés pour ne pas remplir les disques.
+- **Conteneurs :** Traefik et CrowdSec tournent sans possibilité d’élévation de privilèges (`no-new-privileges`) ; les collecteurs de métriques et de journaux tournent en lecture seule, sans les privilèges dont ils n’ont pas besoin, et lisent l’API Docker par une vue en lecture seule. Les journaux de tous les conteneurs sont plafonnés pour ne pas remplir les disques.
 
 ## 🔄 Mises à jour {#mises-a-jour}
 

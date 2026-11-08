@@ -60,7 +60,7 @@ Le serveur Matrix (Synapse) de `anneraud.fr` tourne sur Bruxelles. Les identifia
 Les applications OIDC ne sont pas créées à la main : elles sont décrites dans <RepositoryReference path="opentofu/zitadel/applications.auto.tfvars" /> et créées par [OpenTofu](https://opentofu.org/) avec le fournisseur officiel de Zitadel.
 
 - Chaque application déclare ses adresses de retour, ses rôles et son mode d’authentification : PKCE par défaut, secret client seulement quand le service l’exige.
-- Un service déployé par Ansible provisionne son application au moment de son déploiement (rôle `zitadel_applications`), puis reçoit l’identifiant client dans sa configuration. Pour les services gérés hors d’Ansible, un playbook dédié crée les applications et indique où reporter le résultat.
+- Un service déployé par Ansible provisionne son application au moment de son déploiement (rôle `zitadel`), puis reçoit l’identifiant client dans sa configuration. Pour les services gérés hors d’Ansible, un playbook dédié crée les applications et indique où reporter le résultat.
 - Les rôles attribués dans Zitadel décident des droits dans le service (exemple : la [supervision](supervision.md#connexion)).
 - L’état d’OpenTofu est chiffré (chiffrement natif d’OpenTofu) et conservé avec les autres secrets, hors du dépôt public.
 
