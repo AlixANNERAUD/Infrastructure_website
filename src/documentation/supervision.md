@@ -1,24 +1,29 @@
 # 📈 Supervision
 
-Deux outils complémentaires surveillent l’infrastructure : **Gatus** vérifie de l’extérieur que chaque service répond, **Vigie** mesure de l’intérieur le trafic qui passe par Traefik. Tous deux tournent sur Luxembourg, hors du site principal : une coupure de Bruxelles reste visible et signalée.
+Deux outils complémentaires surveillent l’infrastructure : **Gatus** vérifie de l’extérieur que chaque service répond, **Vigie** mesure de l’intérieur le trafic qui passe par Traefik, l’état des serveurs et de leurs conteneurs, et garde le journal de chaque requête. Tous deux tournent sur Luxembourg, hors du site principal : une coupure de Bruxelles reste visible et signalée.
 
 ```mermaid
 flowchart LR
 	subgraph Luxembourg
 		Gatus
-		Vigie[Vigie : VictoriaMetrics et Grafana]
+		Vigie[Vigie : VictoriaMetrics, VictoriaLogs et Grafana]
 		TraefikL[Traefik]
+		HoteL[Hôte et conteneurs]
 	end
 
 	subgraph Bruxelles
 		TraefikB[Traefik]
+		HoteB[Hôte et conteneurs]
 	end
 
 	Gatus --"requêtes HTTPS"--> Services[Services publics et privés]
-	Vigie --"métriques"--> TraefikL
-	Vigie --"métriques via NetBird"--> TraefikB
+	Vigie --"métriques"--> TraefikL & HoteL
+	Vigie --"métriques via NetBird"--> TraefikB & HoteB
+	TraefikL --"journal d’accès"--> Vigie
+	TraefikB --"journal d’accès via NetBird"--> Vigie
 	Gatus --"alertes"--> HA[Home Assistant]
 	Vigie --"alertes"--> HA
+	Assistant[Assistant IA] --"MCP, lecture seule"--> Vigie
 ```
 
 ## 💚 Gatus {#gatus}
@@ -35,11 +40,14 @@ L’historique est conservé dans une base PostgreSQL, sur un réseau Docker int
 
 ## 🔭 Vigie {#vigie}
 
-Vigie réunit [VictoriaMetrics](https://victoriametrics.com/), qui collecte et stocke les métriques, et [Grafana](https://grafana.com/), qui les affiche et déclenche les alertes. Elle est privée : accessible uniquement depuis le réseau local ou le VPN.
+Vigie réunit [VictoriaMetrics](https://victoriametrics.com/), qui collecte et stocke les métriques, [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/), qui garde les journaux, et [Grafana](https://grafana.com/), qui les affiche et déclenche les alertes. Elle est privée : accessible uniquement depuis le réseau local ou le VPN. Rien de ce qu’elle lit n’est publié : sur Luxembourg, tout passe par des réseaux Docker internes ; Bruxelles répond par le VPN NetBird, derrière la liste d’accès interne de son Traefik.
 
-- **Sources :** les métriques des deux instances de Traefik (requêtes, codes de réponse, durées, par service et par hôte). Celles de Luxembourg sont lues sur un point d’entrée réservé au réseau Docker, jamais publié ; celles de Bruxelles passent par le VPN NetBird et la liste d’accès interne de Bruxelles.
-- **Conservation :** une mesure toutes les 30 secondes, gardée trois mois.
-- **Tableau de bord :** un tableau Traefik provisionné depuis le dépôt.
+- **Traefik :** les métriques des deux instances (requêtes, codes de réponse, durées, par service et par hôte), lues sur un point d’entrée jamais publié.
+- **Serveurs et conteneurs :** [node_exporter](https://github.com/prometheus/node_exporter) mesure le processeur, la mémoire, la charge, les systèmes de fichiers, le cache ZFS et l’état de chaque pool ; [cAdvisor](https://github.com/google/cadvisor) mesure le processeur et la mémoire de chaque conteneur, regroupés par application. Les deux tournent en lecture seule, sans privilège.
+- **CrowdSec :** alertes, bannissements, lignes de journal lues, requêtes du module de Traefik, sur un réseau réservé à CrowdSec et à Vigie (voir [Sécurité](securite.md#crowdsec)).
+- **Journaux d’accès :** [Vector](https://vector.dev/), sur chaque hôte, lit la sortie du conteneur Traefik par une vue en lecture seule de l’API Docker et l’envoie à VictoriaLogs : un enregistrement par requête, avec l’adresse du client, le domaine, le chemin, le code et la taille de la réponse, le routeur, l’agent utilisateur et la durée. Bruxelles l’envoie par le VPN à une seule adresse d’écriture de Vigie, derrière sa liste d’accès interne.
+- **Conservation :** une mesure toutes les 30 secondes, gardée trois mois ; les journaux d’accès, 14 jours (2 Gio au plus).
+- **Tableaux de bord**, provisionnés depuis le dépôt : Traefik, journaux Traefik (filtrés par hôte, client, domaine et code de réponse), hôtes (processeur, mémoire, espace des pools ZFS, consommation de chaque application), CrowdSec et limitation des connexions.
 
 ### 🚨 Alertes {#alertes}
 
@@ -49,9 +57,20 @@ Les règles d’alerte sont décrites dans le dépôt et évaluées en continu. 
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Erreurs serveur      | Une part notable des réponses d’un service sont des erreurs `5xx`                                                                                                                      |
 | Réponses lentes      | Les réponses les plus lentes d’un service dépassent un seuil ; les services qui gardent volontairement des connexions longues (flux, envois, synchronisation Matrix, VPN…) sont exclus |
-| Métriques manquantes | Une instance de Traefik ne peut plus être interrogée, ou plus aucune métrique n’arrive                                                                                                 |
+| Métriques manquantes | Une instance de Traefik ou un hôte ne peut plus être interrogé, ou plus aucune métrique n’arrive                                                                                       |
+| Disque presque plein | Un système de fichiers (hors ZFS) est plein à plus de 90 %                                                                                                                             |
+| Pool ZFS dégradé     | Un pool ZFS n’est plus dans l’état `ONLINE`                                                                                                                                            |
+| Mémoire, processeur  | La mémoire d’un hôte est utilisée à plus de 90 % pendant 15 minutes, ou son processeur pendant 30 minutes                                                                              |
+| CrowdSec             | CrowdSec ne répond plus, le module de Traefik ne lui demande plus ses décisions, il ne lit plus aucun journal, ou ses alertes dépassent nettement le bruit de fond d’Internet          |
+| Connexions limitées  | Un formulaire de connexion refuse beaucoup de tentatives en peu de temps                                                                                                               |
 
-Les alertes sont envoyées à Home Assistant par un webhook, regroupées par alerte, service et hôte, et rappelées périodiquement tant qu’elles durent. L’intégration continue démarre Vigie avec des métriques d’exemple et vérifie que chaque règle se déclenche, ou non, comme prévu.
+Le remplissage des pools ZFS, les disques défaillants et les vérifications des pools restent signalés par TrueNAS lui-même.
+
+Les alertes sont envoyées à Home Assistant par un webhook, regroupées par alerte, service et hôte, et rappelées périodiquement tant qu’elles durent. L’intégration continue démarre Vigie avec des métriques et des journaux d’exemple : chaque règle doit se déclencher, ou non, comme prévu, chaque requête des tableaux de bord doit être valide, et les journaux doivent se relire avec leurs champs.
+
+### 🤖 Assistant {#assistant}
+
+Vigie fait aussi tourner le serveur [MCP](https://modelcontextprotocol.io/) officiel de Grafana. Branché sur [MCPHub](https://github.com/samanhappy/mcphub), il permet à un assistant IA d’interroger les métriques et les journaux d’accès, de lire les tableaux de bord et l’état des alertes, par exemple pour retrouver d’où viennent des requêtes suspectes. Il est en lecture seule, lit Grafana avec un compte de service limité à la consultation, et refuse toute requête sans son propre jeton.
 
 ### 🪪 Connexion {#connexion}
 
