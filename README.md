@@ -2,7 +2,7 @@
 
 <p align="center">
   <strong>The documentation of my self-hosted infrastructure, at <a href="https://www.anneraud.fr">www.anneraud.fr</a>.</strong><br>
-  How about forty family services run on a home server and a cloud VM: architecture, network,
+  How some forty family services run on a home server and a cloud VM: architecture, network,
   security, monitoring, backups and the runbooks to operate them.
 </p>
 
