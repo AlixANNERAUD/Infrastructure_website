@@ -38,6 +38,30 @@ Chaque hôte a un seul point d’entrée web, Traefik. Les protections communes 
 
 CrowdSec protège Luxembourg ; Bruxelles suivra (voir la [feuille de route](feuille-de-route.md#protection)).
 
+#### Exploitation {#crowdsec-exploitation}
+
+CrowdSec est <RepositoryReference path="services/protection" />, déployé sur les hôtes du groupe `protection` ; le module de Traefik est l’intergiciel `crowdsec@file` de <RepositoryReference path="services/proxy/protection.yml.j2" />. Un bannissement dure 4 heures.
+
+- **Prérequis :** le coffre `vault/protection/vault.yml` contient `protection_bouncer_key`, la clé du module de Traefik (`openssl rand -hex 32`), et éventuellement `protection_enrollment_key` pour inscrire le moteur dans la [console CrowdSec](https://app.crowdsec.net) (l’accepter ensuite dans la console, puis `docker restart crowdsec`). Le déploiement de Traefik lit ce coffre sur chaque hôte : il doit exister.
+- **Ordre de déploiement :** Traefik d’abord (`mise deploy services/proxy/deploy.yml --limit <hôte>`), puis CrowdSec (`mise deploy services/protection/deploy.yml`). Pour un nouvel hôte, l’ajouter au groupe `protection` de l’inventaire, puis déployer les deux.
+- **Module indisponible :** Traefik télécharge le module depuis plugins.traefik.io à son démarrage. Si le téléchargement échoue, toutes les routes de l’hôte répondent `404` : redémarrer Traefik (`docker restart traefik`) une fois le site revenu, ou retirer l’hôte du groupe `protection` et redéployer Traefik. Dependabot ne suit pas la version du module.
+- **Changer la clé du module :** mettre à jour le coffre, `docker exec crowdsec cscli bouncers delete traefik`, déployer CrowdSec puis Traefik, puis `docker restart traefik`.
+
+Sur l’hôte :
+
+```bash
+docker exec crowdsec cscli decisions list                  # bannissements en cours
+docker exec crowdsec cscli decisions delete --ip <adresse> # lever un bannissement (pris en compte en 15 s)
+docker exec crowdsec cscli alerts list                     # ce qui a été détecté
+docker exec crowdsec cscli allowlists inspect internal     # adresses jamais bannies
+```
+
+Pour voir les adresses clientes que Traefik journalise sur un hôte, IPv6 comprise :
+
+```bash
+sudo docker logs traefik --since 30m 2>&1 | grep -o '"ClientHost":"[^"]*"' | sort | uniq -c | sort -rn | head
+```
+
 ### 🏠 Services privés {#services-prives}
 
 Les services privés n’acceptent que les connexions venant du réseau local ou du VPN NetBird, grâce à une liste d’accès appliquée par Traefik. Elle vérifie l’adresse de la connexion elle-même, et non les en-têtes transmis : faire confiance aux en-têtes de Cloudflare, pour transmettre l’adresse du visiteur aux applications, ne l’élargit pas. Leur nom DNS pointe en plus vers une adresse du réseau local. Les outils d’administration en font partie : consoles des serveurs et des conteneurs, tableau de bord de Traefik, supervision, déploiement, coffre de signature de Xila.
@@ -66,6 +90,16 @@ Sur les services publics, les formulaires de connexion sont limités par adresse
 - **État d’OpenTofu :** il contient les identifiants des applications Zitadel ; il est chiffré, et OpenTofu refuse de l’écrire en clair.
 - **Intégration continue :** elle n’a aucun secret et analyse les playbooks avec des fichiers de coffre vides.
 - **Modification :** un secret change d’abord dans le dépôt privé, puis le dépôt public met à jour la référence du sous-module.
+
+Au quotidien :
+
+```bash
+mise vault vault/<service>/vault.yml                 # modifier un coffre (éditeur de EDITOR)
+mise exec -- uv run ansible-vault view vault/<service>/vault.yml
+./vault-password-client.py --forget                  # après un changement de mot de passe, ou pour l’effacer du poste
+```
+
+La première commande qui a besoin du mot de passe le demande, le vérifie sur `vault/ansible/vault.yml` et le range dans le trousseau. Sur une machine sans trousseau, la variable `ANSIBLE_VAULT_PASSWORD` le remplace.
 
 ## 🧩 Cloisonnement des réseaux {#cloisonnement}
 

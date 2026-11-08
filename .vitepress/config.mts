@@ -65,13 +65,19 @@ const configuration = defineConfig({
           text: "Exploiter",
           items: [
             { text: "Déploiement", link: "/documentation/deploiement" },
+            {
+              text: "Authentification",
+              link: "/documentation/authentification",
+            },
             { text: "Supervision", link: "/documentation/supervision" },
             { text: "Sauvegardes", link: "/documentation/sauvegardes" },
+            { text: "Assistants IA", link: "/documentation/assistants" },
           ],
         },
         {
           text: "Référence",
           items: [
+            { text: "Services", link: "/documentation/services" },
             { text: "Inventaire", link: "/documentation/inventaire" },
             {
               text: "Feuille de route",
