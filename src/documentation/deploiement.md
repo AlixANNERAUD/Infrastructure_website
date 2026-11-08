@@ -83,9 +83,9 @@ Chaque image Docker est figée sur une version exacte : jamais `latest`, jamais 
 
 ## 🤖 Semaphore {#semaphore}
 
-[Semaphore](https://semaphoreui.com/) est une interface web pour lancer les playbooks depuis Bruxelles, sans passer par l’ordinateur portable. Son service est fusionné dans le dépôt ; sa mise en service est à venir (voir la [feuille de route](feuille-de-route.md#fusionne)).
+[Semaphore](https://semaphoreui.com/) est une interface web pour lancer les playbooks depuis Bruxelles, sans passer par l’ordinateur portable.
 
-- Il est privé : accessible uniquement depuis le réseau local ou le VPN.
+- Il est privé : accessible uniquement depuis le réseau local ou le VPN. La connexion passe par [Zitadel](architecture.md#authentification) ; son compte administrateur local reste en secours, puisque Semaphore déploie Zitadel lui-même.
 - Il clone le dépôt public, et le sous-module des secrets avec un accès en lecture seule limité à ce seul dépôt.
 - Il se connecte aux hôtes avec sa propre clé SSH, autorisée sur le compte d’automatisation comme celle de l’ordinateur portable.
 - Chaque playbook a deux modèles de tâche : un aperçu (`--check --diff`) et une exécution, lancés à la main.

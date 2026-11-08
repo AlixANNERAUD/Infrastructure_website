@@ -1,13 +1,10 @@
 # 🧭 Feuille de route
 
-État au 1er novembre 2026. Chaque changement passe par une pull request du [dépôt Infrastructure](https://github.com/AlixANNERAUD/Infrastructure), puis est déployé. Les travaux prévus sont listés dans l’ordre envisagé.
+État au 8 novembre 2026. Chaque changement passe par une pull request du [dépôt Infrastructure](https://github.com/AlixANNERAUD/Infrastructure), puis est déployé. Les travaux prévus sont listés dans l’ordre envisagé.
 
 ## ✅ Fusionné, à déployer {#fusionne}
 
-1. **Protection CrowdSec sur Luxembourg :** un moteur CrowdSec lit les journaux de Traefik et bannit les adresses hostiles ; Traefik refuse ces adresses sur toutes les routes, privées comprises. Le réseau local et le VPN ne sont jamais bannis. Voir [Sécurité](securite.md#crowdsec).
-2. **Limitation des connexions :** les formulaires de connexion des services publics (Zitadel, Vaultwarden, Nextcloud, Jellyfin, Home Assistant, Tolgee, NetBird) sont limités par adresse, sur les deux hôtes. La synchronisation des applications n’est pas concernée. Voir [Sécurité](securite.md#limitation).
-3. **MeshCentral et PDF (BentoPDF) deviennent privés :** ils ne sont plus accessibles que depuis le réseau local ou le VPN ; les agents MeshCentral des appareils passent eux aussi par le réseau local ou le VPN.
-4. **Semaphore :** une interface web privée lance les playbooks depuis Bruxelles. Voir [Déploiement](deploiement.md#semaphore).
+Rien en attente : tout ce qui est fusionné est déployé.
 
 ## 🗓️ Prévu {#prevu}
 
@@ -20,7 +17,6 @@
 ### 🛡️ Protection et accès {#protection}
 
 1. **CrowdSec sur Bruxelles**, sur le même modèle que Luxembourg. L’adresse publique de la maison, qui change, et celle de Luxembourg ne sont jamais bannies : CrowdSec les résout lui-même à chaque détection.
-2. **Connexion à Semaphore par Zitadel**, à la place de son compte local.
 
 ### 💾 Sauvegardes et dépôts {#sauvegardes}
 
