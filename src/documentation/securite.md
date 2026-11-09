@@ -83,6 +83,7 @@ Sur les services publics, les formulaires de connexion sont limités par adresse
 - **Clés restreintes :** chaque clé autorisée sur ce compte n’est acceptée que depuis les réseaux privés de l’infrastructure, et aucune autre clé n’est conservée. Le playbook qui le configure refuse de s’exécuter depuis une connexion qui ne viendrait pas de ces réseaux, pour ne jamais se couper l’accès.
 - **`sshd` durci :** pas d’authentification par mot de passe, pas de connexion `root`, et seuls le compte d’automatisation et une courte liste de comptes nommés peuvent se connecter.
 - **Un compte par usage :** les machines qui doivent se joindre ont leur propre compte et leur propre clé, jamais le compte d’automatisation. Par exemple, pour la réplication, chaque client ne peut lancer, par une commande forcée, que sa propre tâche de réplication sur Bruxelles ; la clé d’API de TrueNAS ne quitte jamais Bruxelles.
+- **Certificats SSH (en cours) :** [Trousseau](trousseau.md) délivre, après une connexion par Zitadel, des certificats valables une journée, signés par une autorité dont la clé privée ne quitte jamais OpenBao ; les serveurs lui feront confiance hôte par hôte, au lieu d’une liste de clés à copier.
 - **TrueNAS :** ses utilisateurs et son serveur SSH se règlent dans son interface. Ansible n’y change rien mais vérifie les réglages (clés et restrictions, connexion par mot de passe désactivée) et indique les corrections à faire.
 
 ## 🗝️ Secrets {#secrets}

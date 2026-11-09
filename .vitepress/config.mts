@@ -69,6 +69,7 @@ const configuration = defineConfig({
               text: "Authentification",
               link: "/documentation/authentification",
             },
+            { text: "Trousseau", link: "/documentation/trousseau" },
             { text: "Supervision", link: "/documentation/supervision" },
             { text: "Sauvegardes", link: "/documentation/sauvegardes" },
             { text: "Assistants IA", link: "/documentation/assistants" },
