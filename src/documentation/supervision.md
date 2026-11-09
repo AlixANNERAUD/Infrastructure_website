@@ -36,18 +36,19 @@ flowchart LR
 - **Groupes :** services, administration (outils internes) et infrastructure (hôtes). Les outils internes de Luxembourg sont vérifiés directement depuis le réseau Docker, puisque la liste d’accès interne de Traefik n’accepte que le réseau local et le VPN.
 - **Alertes :** Gatus prévient Home Assistant dès le premier échec, puis à nouveau quand le service est rétabli.
 
-L’historique est conservé dans une base PostgreSQL, sur un réseau Docker interne. Une seconde instance, avec la même configuration de base, sert la page d’état du domaine distinct `dera.page`.
+L’historique est conservé dans une base PostgreSQL, sur un réseau Docker interne. Une seconde instance, avec la même configuration de base, sert la page d’état du domaine distinct `dera.page`. Les deux exposent aussi leurs résultats à Vigie (`/metrics`, que Traefik réserve aux réseaux internes), qui en tire la disponibilité de chaque service sur la durée.
 
 ## 🔭 Vigie {#vigie}
 
 Vigie réunit [VictoriaMetrics](https://victoriametrics.com/), qui collecte et stocke les métriques, [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/), qui garde les journaux, et [Grafana](https://grafana.com/), qui les affiche et déclenche les alertes. Elle est privée : accessible uniquement depuis le réseau local ou le VPN. Rien de ce qu’elle lit n’est publié : sur Luxembourg, tout passe par des réseaux Docker internes ; Bruxelles répond par le VPN NetBird, derrière la liste d’accès interne de son Traefik.
 
-- **Traefik :** les métriques des deux instances (requêtes, codes de réponse, durées, par service et par hôte), lues sur un point d’entrée jamais publié.
-- **Serveurs et conteneurs :** [node_exporter](https://github.com/prometheus/node_exporter) mesure le processeur, la mémoire, la charge, les systèmes de fichiers, le cache ZFS et l’état de chaque pool ; [cAdvisor](https://github.com/google/cadvisor) mesure le processeur, la mémoire, le réseau et les lectures et écritures disque de chaque conteneur, regroupés par application, ainsi que le trafic réseau de l’hôte (node_exporter, dans son propre réseau Docker, ne voit pas celui de l’hôte). Les deux tournent en lecture seule, sans privilège.
+- **Traefik :** les métriques des deux instances (requêtes, codes de réponse, durées, par service et par hôte, et l’expiration de chaque certificat servi), lues sur un point d’entrée jamais publié.
+- **Gatus :** le résultat et la durée de chaque vérification des deux pages d’état, lus par le réseau proxy de Luxembourg.
+- **Serveurs et conteneurs :** [node_exporter](https://github.com/prometheus/node_exporter) mesure le processeur, la mémoire, la charge, les systèmes de fichiers, le cache ZFS, l’état de chaque pool, les températures des capteurs (processeurs, NVMe), la synchronisation de l’horloge et les processus tués faute de mémoire ; [cAdvisor](https://github.com/google/cadvisor) mesure le processeur, la mémoire, le réseau et les lectures et écritures disque et l’heure de démarrage de chaque conteneur, regroupés par application, ainsi que le trafic réseau de l’hôte (node_exporter, dans son propre réseau Docker, ne voit pas celui de l’hôte). Les deux tournent en lecture seule, sans privilège.
 - **CrowdSec :** alertes, bannissements, lignes de journal lues, requêtes du module de Traefik, une collecte par hôte (voir [Sécurité](securite.md#crowdsec)). Sur Luxembourg, par un réseau réservé à CrowdSec et à Vigie ; sur Bruxelles, par son Traefik derrière la liste d’accès interne, qui ne transmet que `/metrics` et joint CrowdSec par son réseau réservé, sans le mettre sur le réseau proxy.
 - **Journaux d’accès :** [Vector](https://vector.dev/), sur chaque hôte, lit la sortie du conteneur Traefik par une vue en lecture seule de l’API Docker et l’envoie à VictoriaLogs : un enregistrement par requête, avec l’adresse du client, le domaine, le chemin, le code et la taille de la réponse, le routeur, l’agent utilisateur et la durée. Bruxelles l’envoie par le VPN à une seule adresse d’écriture de Vigie, derrière sa liste d’accès interne.
 - **Conservation :** une mesure toutes les 30 secondes, gardée trois mois ; les journaux d’accès, 14 jours (2 Gio au plus).
-- **Tableaux de bord**, provisionnés depuis le dépôt : Traefik, journaux Traefik (filtrés par hôte, client, domaine et code de réponse), hôtes (processeur, mémoire, espace des pools ZFS, trafic réseau, débit et occupation des disques, consommation de chaque application), CrowdSec, limitation des connexions et sauvegardes (dernier passage, taille du dépôt sur Google Drive, volume ajouté et débit d’envoi chaque nuit).
+- **Tableaux de bord**, provisionnés depuis le dépôt : Traefik, journaux Traefik (filtrés par hôte, client, domaine et code de réponse), hôtes (processeur, mémoire, espace des pools ZFS, trafic réseau, débit et occupation des disques, consommation de chaque application, températures, décalage de l’horloge, processus tués faute de mémoire et redémarrages des conteneurs), disponibilité (part de vérifications Gatus réussies et temps de réponse de chaque service sur 30 jours, expiration des certificats de Traefik et de ceux que voit Gatus), CrowdSec, limitation des connexions et sauvegardes (dernier passage, taille du dépôt sur Google Drive, volume ajouté et débit d’envoi chaque nuit).
 
 ### 🚨 Alertes {#alertes}
 
@@ -60,12 +61,18 @@ Les règles d’alerte sont décrites dans le dépôt et évaluées en continu. 
 | Métriques manquantes | Une instance de Traefik ou un hôte ne peut plus être interrogé, ou plus aucune métrique n’arrive                                                                                       |
 | Disque presque plein | Un système de fichiers (hors ZFS) est plein à plus de 90 %                                                                                                                             |
 | Pool ZFS dégradé     | Un pool ZFS n’est plus dans l’état `ONLINE`                                                                                                                                            |
+| Disque bientôt plein | Au rythme des deux derniers jours, un système de fichiers ou un pool ZFS sera plein dans moins d’une semaine                                                                           |
+| Température          | Un capteur dépasse son propre seuil d’alerte (les NVMe en ont un) ou 85 °C pendant 10 minutes                                                                                          |
+| Mémoire épuisée      | Le noyau a tué un processus faute de mémoire (`dmesg` le nomme)                                                                                                                        |
+| Horloge              | Un hôte n’est plus synchronisé par NTP, ou son horloge dérive de plus de 50 ms sans revenir                                                                                            |
+| Redémarrages         | Un conteneur a démarré trois fois en une heure : il plante en boucle                                                                                                                   |
+| Certificat           | Un certificat servi par Traefik, adresses internes comprises, expire dans moins de 14 jours : son renouvellement a échoué (Let’s Encrypt renouvelle 30 jours avant)                    |
 | Mémoire, processeur  | La mémoire d’un hôte est utilisée à plus de 90 % pendant 15 minutes, ou son processeur pendant 30 minutes                                                                              |
 | CrowdSec             | CrowdSec ne répond plus, le module de Traefik ne lui demande plus ses décisions, il ne lit plus aucun journal, ou ses alertes dépassent nettement le bruit de fond d’Internet          |
 | Connexions limitées  | Un formulaire de connexion refuse beaucoup de tentatives en peu de temps                                                                                                               |
 | Sauvegardes          | La sauvegarde vers Google Drive échoue, ou sa dernière réussite date de plus de 36 heures (voir [Sauvegardes](sauvegardes.md#google-drive))                                            |
 
-Le remplissage des pools ZFS, les disques défaillants et les vérifications des pools restent signalés par TrueNAS lui-même.
+Les disques défaillants et les vérifications des pools restent signalés par TrueNAS lui-même, tout comme le seuil de remplissage des pools ; Vigie n’en prévoit que la tendance.
 
 Les alertes sont envoyées à Home Assistant par un webhook, regroupées par alerte, service et hôte, et rappelées périodiquement tant qu’elles durent. L’intégration continue démarre Vigie avec des métriques et des journaux d’exemple : chaque règle doit se déclencher, ou non, comme prévu, chaque requête des tableaux de bord doit être valide, et les journaux doivent se relire avec leurs champs.
 
@@ -90,7 +97,7 @@ Un [assistant IA](assistants.md#grafana) pose les mêmes requêtes par le serveu
 - **Home Assistant :** une automatisation à déclencheur webhook, d’identifiant `vigie_home_assistant_webhook_id`, avec `local_only: false` : Grafana l’appelle par `maison.anneraud.fr` depuis Luxembourg.
 - **Déploiement :** `mise deploy services/vigie/deploy.yml`, avec mise, puisqu’il provisionne aussi l’application Zitadel de Grafana. Il télécharge l’extension VictoriaLogs de Grafana, vérifiée par sa somme de contrôle.
 - **Nouvel hôte :** déployer <RepositoryReference path="services/metriques" /> sur l’hôte (collecteurs et Vector), puis Vigie, qui ajoute ses cibles. Un hôte distant expose ses collecteurs par son Traefik (`metriques_host` dans ses variables) ; son déploiement envoie un lot vide à Vigie et s’arrête en expliquant un refus (`403` : adresse hors de la liste d’accès de Luxembourg ; pas de réponse : Luxembourg injoignable par le VPN).
-- **Pools ZFS :** leur remplissage, les disques défaillants et les vérifications restent signalés par TrueNAS : garder un service d’alerte configuré dans **TrueNAS → System → Alert Settings**.
+- **Pools ZFS :** leur seuil de remplissage, les disques défaillants et les vérifications restent signalés par TrueNAS : garder un service d’alerte configuré dans **TrueNAS → System → Alert Settings**.
 - **Réglages :** durées de conservation des journaux dans <RepositoryReference path="inventory/group_vars/vigie.yml" />, cibles dans <RepositoryReference path="services/vigie/scrape.yml.j2" />, règles d’alerte et tableaux de bord dans <RepositoryReference path="services/vigie/grafana" />.
 
 ### 🪪 Connexion {#connexion}
