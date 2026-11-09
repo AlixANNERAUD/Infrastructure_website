@@ -63,6 +63,7 @@ Les règles d’alerte sont décrites dans le dépôt et évaluées en continu. 
 | Mémoire, processeur  | La mémoire d’un hôte est utilisée à plus de 90 % pendant 15 minutes, ou son processeur pendant 30 minutes                                                                              |
 | CrowdSec             | CrowdSec ne répond plus, le module de Traefik ne lui demande plus ses décisions, il ne lit plus aucun journal, ou ses alertes dépassent nettement le bruit de fond d’Internet          |
 | Connexions limitées  | Un formulaire de connexion refuse beaucoup de tentatives en peu de temps                                                                                                               |
+| Sauvegardes          | La sauvegarde vers Google Drive échoue, ou sa dernière réussite date de plus de 36 heures (voir [Sauvegardes](sauvegardes.md#google-drive))                                            |
 
 Le remplissage des pools ZFS, les disques défaillants et les vérifications des pools restent signalés par TrueNAS lui-même.
 

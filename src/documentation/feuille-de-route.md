@@ -4,7 +4,7 @@
 
 ## ✅ Fusionné, à déployer {#fusionne}
 
-Rien en attente : tout ce qui est fusionné est déployé.
+- **Sauvegarde chiffrée vers Google Drive** (voir [Sauvegardes](sauvegardes.md#google-drive-mise-en-place)) : client OAuth Google, jeton et mot de passe restic dans le coffre, puis déployer les métriques, la sauvegarde et Vigie.
 
 ## 🗓️ Prévu {#prevu}
 
@@ -16,5 +16,4 @@ Rien en attente : tout ce qui est fusionné est déployé.
 
 ### 💾 Sauvegardes et dépôts {#sauvegardes}
 
-1. **Sauvegarde chiffrée hors site vers Google Drive**, avec [restic](https://restic.net/) à la place de la synchronisation de TrueNAS, trop lente : chaque nuit, un instantané ZFS des jeux de données choisis, dont seules les modifications sont envoyées, et une alerte de Vigie quand une sauvegarde échoue ou date de plus d’un jour et demi.
-2. **Miroirs GitHub automatiques dans Gitea :** chaque dépôt (hors forks) des comptes `AlixANNERAUD` et `xila-project` est copié dans Gitea et resynchronisé, les nouveaux dépôts compris, décrits avec OpenTofu.
+1. **Miroirs GitHub automatiques dans Gitea :** chaque dépôt (hors forks) des comptes `AlixANNERAUD` et `xila-project` est copié dans Gitea et resynchronisé, les nouveaux dépôts compris, décrits avec OpenTofu.

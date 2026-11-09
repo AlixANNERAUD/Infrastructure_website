@@ -52,21 +52,22 @@ Ajouter un service au dépôt, c’est lui ajouter une ligne ici et une vérific
 
 ## 🛠️ Administration {#administration}
 
-| Service                                                                | Rôle                                                              | Accès  | Hôte                  | Déploiement  |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------- | ------ | --------------------- | ------------ |
-| [Déploiement](https://deploiement.anneraud.fr/)                        | Lancement des playbooks (Semaphore)                               | Privé  | Bruxelles             | Ansible      |
-| [Proxy Bruxelles](https://traefik.bruxelles.anneraud.fr/)              | Tableau de bord de Traefik                                        | Privé  | Bruxelles             | Ansible      |
-| [Bruxelles console](https://bruxelles.anneraud.fr/)                    | Administration du serveur (TrueNAS)                               | Privé  | Bruxelles             | TrueNAS      |
-| [Conteneurs Bruxelles](https://conteneurs.bruxelles.anneraud.fr/)      | Conteneurs (Portainer)                                            | Privé  | Bruxelles             | TrueNAS Apps |
-| [Cockpit Luxembourg](https://cockpit.luxembourg.anneraud.fr/)          | Administration du serveur (Cockpit)                               | Privé  | Luxembourg            | Ansible      |
-| [DNS dynamique Bruxelles](https://ddns-updater.bruxelles.anneraud.fr/) | Mise à jour de l’adresse publique du site principal               | Privé  | Bruxelles             | TrueNAS Apps |
-| [Databasus](https://databasus.anneraud.fr/)                            | Sauvegarde des bases de données                                   | Privé  | Bruxelles             | TrueNAS Apps |
-| [MeshCentral](https://parc.anneraud.fr/)                               | Gestion à distance des appareils                                  | Privé  | Bruxelles             | TrueNAS Apps |
-| [Vault Xila](https://vault.xila.dev/ui/)                               | Coffre de signature de Xila (OpenBao)                             | Privé  | Bruxelles             | Ansible      |
-| [Vigie](https://vigie.anneraud.fr/)                                    | Supervision (VictoriaMetrics, VictoriaLogs, Grafana)              | Privé  | Luxembourg            | Ansible      |
-| Métriques                                                              | Métriques des hôtes et des conteneurs, envoi des journaux d’accès | Privé  | Luxembourg, Bruxelles | Ansible      |
-| Protection                                                             | Détection et bannissement des adresses hostiles (CrowdSec)        | Privé  | Luxembourg, Bruxelles | Ansible      |
-| [État](https://etat.anneraud.fr/)                                      | Page d’état des services (Gatus)                                  | Public | Luxembourg            | Ansible      |
+| Service                                                                | Rôle                                                                                                    | Accès  | Hôte                  | Déploiement  |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------ | --------------------- | ------------ |
+| [Déploiement](https://deploiement.anneraud.fr/)                        | Lancement des playbooks (Semaphore)                                                                     | Privé  | Bruxelles             | Ansible      |
+| [Proxy Bruxelles](https://traefik.bruxelles.anneraud.fr/)              | Tableau de bord de Traefik                                                                              | Privé  | Bruxelles             | Ansible      |
+| [Bruxelles console](https://bruxelles.anneraud.fr/)                    | Administration du serveur (TrueNAS)                                                                     | Privé  | Bruxelles             | TrueNAS      |
+| [Conteneurs Bruxelles](https://conteneurs.bruxelles.anneraud.fr/)      | Conteneurs (Portainer)                                                                                  | Privé  | Bruxelles             | TrueNAS Apps |
+| [Cockpit Luxembourg](https://cockpit.luxembourg.anneraud.fr/)          | Administration du serveur (Cockpit)                                                                     | Privé  | Luxembourg            | Ansible      |
+| [DNS dynamique Bruxelles](https://ddns-updater.bruxelles.anneraud.fr/) | Mise à jour de l’adresse publique du site principal                                                     | Privé  | Bruxelles             | TrueNAS Apps |
+| [Databasus](https://databasus.anneraud.fr/)                            | Sauvegarde des bases de données                                                                         | Privé  | Bruxelles             | TrueNAS Apps |
+| [MeshCentral](https://parc.anneraud.fr/)                               | Gestion à distance des appareils                                                                        | Privé  | Bruxelles             | TrueNAS Apps |
+| [Vault Xila](https://vault.xila.dev/ui/)                               | Coffre de signature de Xila (OpenBao)                                                                   | Privé  | Bruxelles             | Ansible      |
+| [Vigie](https://vigie.anneraud.fr/)                                    | Supervision (VictoriaMetrics, VictoriaLogs, Grafana)                                                    | Privé  | Luxembourg            | Ansible      |
+| Métriques                                                              | Métriques des hôtes et des conteneurs, envoi des journaux d’accès                                       | Privé  | Luxembourg, Bruxelles | Ansible      |
+| Protection                                                             | Détection et bannissement des adresses hostiles (CrowdSec)                                              | Privé  | Luxembourg, Bruxelles | Ansible      |
+| Sauvegarde                                                             | Copie chiffrée de Bruxelles vers Google Drive (restic, voir [Sauvegardes](sauvegardes.md#google-drive)) | Privé  | Bruxelles             | Ansible      |
+| [État](https://etat.anneraud.fr/)                                      | Page d’état des services (Gatus)                                                                        | Public | Luxembourg            | Ansible      |
 
 ## 🌐 Autres domaines {#autres-domaines}
 
