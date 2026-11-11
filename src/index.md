@@ -20,10 +20,10 @@ hero:
 
 features:
   - icon: 🤖
-    title: Assistant (Open WebUI)
-    details: Interface d’assistant IA. Nécessite un VPN.
-    link: https://assistant.anneraud.fr
-    linkText: Visiter Assistant
+    title: Discussion (Open WebUI)
+    details: Discussion avec des modèles d’IA. Nécessite un VPN.
+    link: https://discussion.anneraud.fr
+    linkText: Visiter Discussion
     rel: external
     target: _blank
   - icon: 🔎
