@@ -26,6 +26,32 @@ MCPHub (<RepositoryReference path="services/mcphub" />) tourne sur Bruxelles, à
 
 Le coffre `vault/mcphub/vault.yml` (créé avec `mise vault:create`) contient `mcphub_database_password`, `mcphub_jwt_secret`, `mcphub_better_auth_secret` (`openssl rand -hex 32` chacun) et `mcphub_admin_password`, utilisé seulement à la création du premier utilisateur. Le déploiement (`mise deploy services/mcphub/deploy.yml`) provisionne aussi l’application Zitadel, d’où le besoin d’OpenTofu.
 
+## 🦞 Assistant personnel {#openclaw}
+
+[OpenClaw](https://openclaw.ai/) (<RepositoryReference path="services/assistant" />) tourne sur Luxembourg, à l’adresse `assistant.anneraud.fr`, accessible uniquement depuis le réseau local ou le VPN. Contrairement aux assistants des postes de travail, il agit seul : il exécute des commandes, lit le web et répond sur les messageries qui lui sont reliées. Une page ou un message peut donc tenter de le détourner (injection de prompt), d’où son isolement :
+
+- **Conteneur :** aucune capacité Linux, racine en lecture seule, 2 Go de mémoire au plus, et un utilisateur (2000) qui n’a pas de compte sur l’hôte.
+- **Données :** il ne voit que son dossier, `/opt/assistant/home`, qui contient son état, ses identifiants et son espace de travail.
+- **Docker :** il n’a pas accès au socket Docker. Son bac à sable par session, qui lance des conteneurs, n’est donc pas disponible.
+- **Réseau :** il n’est joint que par Traefik, et ne sort que vers les fournisseurs de modèles et les messageries.
+
+Le déploiement possède les réglages de la passerelle (`gateway.json.j2`) : écoute, authentification par jeton, origine de l’interface, et Traefik comme proxy de confiance pour l’adresse des clients. Un conteneur les réécrit avant chaque démarrage. Tout le reste (modèles, messageries, compétences) se règle depuis l’interface ou la ligne de commande, et reste dans `home`.
+
+Le coffre `vault/assistant/vault.yml` (créé avec `mise vault:create`) contient :
+
+- `assistant_gateway_token` (`openssl rand -hex 32`), le jeton à saisir dans l’interface ;
+- `assistant_environment`, facultatif : les variables passées au conteneur, comme les clés des fournisseurs ou `TELEGRAM_BOT_TOKEN`. Leurs valeurs se limitent aux lettres, aux chiffres et à `._~:/+=@,-`, car Compose interpréterait `$` et les guillemets.
+
+Après le premier déploiement (`mise deploy services/assistant/deploy.yml`), la configuration initiale choisit le modèle et les messageries :
+
+```bash
+docker exec -it assistant node dist/index.js onboard
+```
+
+Elle peut modifier les réglages de la passerelle ; le redémarrage suivant les rétablit. Luxembourg n’est pas encore sauvegardé : le dossier `home` non plus.
+
+La CI (`.github/scripts/check-assistant.sh`) démarre OpenClaw avec ces réglages et vérifie qu’il les applique, qu’il tourne sans droits d’écriture sur sa racine, et qu’il refuse un mauvais jeton.
+
 ## 💻 Postes de travail {#postes}
 
 `mise deploy hosts/workstations/mcp.yml` branche les assistants du poste sur MCPHub, à l’adresse `https://mcphub.anneraud.fr/mcp` : Claude Code (par sa ligne de commande, pour l’utilisateur), Codex (`~/.codex/config.toml`), OpenCode (`~/.config/opencode/opencode.json`) et Antigravity (`~/.gemini/config/mcp_config.json`).
