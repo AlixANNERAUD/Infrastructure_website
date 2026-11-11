@@ -71,12 +71,13 @@ Ajouter un service au dépôt, c’est lui ajouter une ligne ici et une vérific
 
 ## 🌐 Autres domaines {#autres-domaines}
 
-| Service                                             | Rôle                                                                     | Accès  | Hôte       | Déploiement  |
-| --------------------------------------------------- | ------------------------------------------------------------------------ | ------ | ---------- | ------------ |
-| [Mini Train Store](https://minitrainstore.fr/)      | Gestion d’entreprise (Odoo), derrière Cloudflare                         | Public | Bruxelles  | TrueNAS Apps |
-| [Translation](https://translate.anneraud.fr/)       | Traduction de projets (Tolgee)                                           | Public | Luxembourg | Ansible      |
-| [Vulnérabilités](https://vulnerabilities.xila.dev/) | Vulnérabilités des dépendances des projets, d’après leurs SBOM (nanobom) | Public | Luxembourg | Ansible      |
-| [Matrix (insa.lol)](https://matrix.insa.lol/)       | Messagerie d’une communauté (Synapse)                                    | Public | Luxembourg | Ansible      |
-| [Status (dera.page)](https://status.dera.page/)     | Page d’état du domaine `dera.page` (Gatus)                               | Public | Luxembourg | Ansible      |
-| [Star History](https://star-history.dera.page/)     | Historique des étoiles de dépôts GitHub (simrepo)                        | Public | Luxembourg | Ansible      |
-| [Portfolio](https://alix.anneraud.fr/)              | Portfolio d’Alix                                                         | Public | —          | GitHub Pages |
+| Service                                                              | Rôle                                                                                | Accès  | Hôte       | Déploiement  |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------ | ---------- | ------------ |
+| [Mini Train Store](https://minitrainstore.fr/)                       | Gestion d’entreprise (Odoo), derrière Cloudflare                                    | Public | Bruxelles  | TrueNAS Apps |
+| [Translation](https://translate.anneraud.fr/)                        | Traduction de projets (Tolgee)                                                      | Public | Luxembourg | Ansible      |
+| [Vulnérabilités](https://vulnerabilities.xila.dev/)                  | Vulnérabilités des dépendances des projets de Xila, d’après leurs SBOM (nanobom)    | Public | Luxembourg | Ansible      |
+| [Vulnérabilités (personnelles)](https://vulnerabilites.anneraud.fr/) | Vulnérabilités des dépendances des projets personnels, d’après leurs SBOM (nanobom) | Public | Luxembourg | Ansible      |
+| [Matrix (insa.lol)](https://matrix.insa.lol/)                        | Messagerie d’une communauté (Synapse)                                               | Public | Luxembourg | Ansible      |
+| [Status (dera.page)](https://status.dera.page/)                      | Page d’état du domaine `dera.page` (Gatus)                                          | Public | Luxembourg | Ansible      |
+| [Star History](https://star-history.dera.page/)                      | Historique des étoiles de dépôts GitHub (simrepo)                                   | Public | Luxembourg | Ansible      |
+| [Portfolio](https://alix.anneraud.fr/)                               | Portfolio d’Alix                                                                    | Public | —          | GitHub Pages |
