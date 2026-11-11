@@ -1,10 +1,6 @@
 # 🧭 Feuille de route
 
-État au 8 novembre 2026. Chaque changement passe par une pull request du [dépôt Infrastructure](https://github.com/AlixANNERAUD/Infrastructure), puis est déployé. Les travaux prévus sont listés dans l’ordre envisagé.
-
-## ✅ Fusionné, à déployer {#fusionne}
-
-- **Sauvegarde chiffrée vers Google Drive** (voir [Sauvegardes](sauvegardes.md#google-drive-mise-en-place)) : client OAuth Google, jeton et mot de passe restic dans le coffre, puis déployer les métriques, la sauvegarde et Vigie.
+État au 11 novembre 2026. Chaque changement passe par une pull request du [dépôt Infrastructure](https://github.com/AlixANNERAUD/Infrastructure), puis est déployé. Les travaux prévus sont listés dans l’ordre envisagé.
 
 ## 🗓️ Prévu {#prevu}
 
