@@ -22,7 +22,7 @@ Ajouter un service au dépôt, c’est lui ajouter une ligne ici et une vérific
 | [Finances](https://finances.anneraud.fr/)                       | Finances personnelles (Firefly III)           | Privé   | Bruxelles  | TrueNAS Apps |
 | [Importateur finances](https://importeur-finances.anneraud.fr/) | Import des relevés dans Firefly III           | Privé   | Bruxelles  | TrueNAS Apps |
 | [Discussion](https://discussion.anneraud.fr/)                   | Discussion avec des modèles d’IA (Open WebUI) | Privé   | Bruxelles  | TrueNAS Apps |
-| [Assistant](https://assistant.anneraud.fr/)                     | Assistant IA personnel (OpenClaw)             | Privé   | Luxembourg | Ansible      |
+| [Assistant](https://assistant.anneraud.fr/)                     | Assistant IA personnel (Hermes Agent)         | Privé   | Luxembourg | Ansible      |
 | [Recherche](https://recherche.anneraud.fr/)                     | Moteur de recherche (SearXNG)                 | Privé   | Bruxelles  | TrueNAS Apps |
 | [PDF](https://pdf.anneraud.fr/)                                 | Outils PDF (BentoPDF)                         | Privé   | Bruxelles  | TrueNAS Apps |
 | [Automatisation](https://automatisation.anneraud.fr/)           | Flux automatisés (n8n)                        | Privé   | Bruxelles  | TrueNAS Apps |

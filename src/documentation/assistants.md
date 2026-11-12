@@ -11,8 +11,10 @@ flowchart LR
 	end
 	subgraph Luxembourg
 		Grafana[Serveur MCP de Grafana] --> Vigie[Métriques et journaux de Vigie]
+		Hermes[Hermes Agent]
 	end
 	MCPHub --"jeton dédié"--> Grafana
+	Hermes --"OAuth, par le VPN"--> MCPHub
 ```
 
 ## 🧭 MCPHub {#mcphub}
@@ -26,31 +28,44 @@ MCPHub (<RepositoryReference path="services/mcphub" />) tourne sur Bruxelles, à
 
 Le coffre `vault/mcphub/vault.yml` (créé avec `mise vault:create`) contient `mcphub_database_password`, `mcphub_jwt_secret`, `mcphub_better_auth_secret` (`openssl rand -hex 32` chacun) et `mcphub_admin_password`, utilisé seulement à la création du premier utilisateur. Le déploiement (`mise deploy services/mcphub/deploy.yml`) provisionne aussi l’application Zitadel, d’où le besoin d’OpenTofu.
 
-## 🦞 Assistant personnel {#openclaw}
+## ⚕️ Assistant personnel {#hermes}
 
-[OpenClaw](https://openclaw.ai/) (<RepositoryReference path="services/assistant" />) tourne sur Luxembourg, à l’adresse `assistant.anneraud.fr`, accessible uniquement depuis le réseau local ou le VPN. Contrairement aux assistants des postes de travail, il agit seul : il exécute des commandes, lit le web et répond sur les messageries qui lui sont reliées. Une page ou un message peut donc tenter de le détourner (injection de prompt), d’où son isolement :
+[Hermes Agent](https://hermes-agent.nousresearch.com/) (<RepositoryReference path="services/assistant" />) tourne sur Luxembourg. Son tableau de bord est à l’adresse `assistant.anneraud.fr`, accessible uniquement depuis le réseau local ou le VPN. Contrairement aux assistants des postes de travail, il agit seul : il exécute des commandes, lit le web, répond sur Matrix et écrit ses propres compétences à partir de ce qu’il a fait. Une page ou un message peut donc tenter de le détourner (injection de prompt), d’où son isolement :
 
-- **Conteneur :** aucune capacité Linux, racine en lecture seule, 2 Go de mémoire au plus, et un utilisateur (2000) qui n’a pas de compte sur l’hôte.
-- **Données :** il ne voit que son dossier, `/opt/assistant/home`, qui contient son état, ses identifiants et son espace de travail.
-- **Docker :** il n’a pas accès au socket Docker. Son bac à sable par session, qui lance des conteneurs, n’est donc pas disponible.
-- **Réseau :** il n’est joint que par Traefik, et ne sort que vers les fournisseurs de modèles et les messageries.
-
-Le déploiement possède les réglages de la passerelle (`gateway.json.j2`) : écoute, authentification par jeton, origine de l’interface, et Traefik comme proxy de confiance pour l’adresse des clients. Un conteneur les réécrit avant chaque démarrage. Tout le reste (modèles, messageries, compétences) se règle depuis l’interface ou la ligne de commande, et reste dans `home`.
+- **Conteneur :** son image démarre en root pour confier son dossier à l’utilisateur 2000, qui n’a pas de compte sur l’hôte, puis fait tourner la passerelle et le tableau de bord sous cet utilisateur. Il ne garde que les capacités Linux nécessaires à ce passage, avec 2 Go de mémoire et 512 processus au plus.
+- **Données :** il ne voit que son dossier, `/opt/assistant/data` : configuration, identifiants, mémoire, compétences et sessions.
+- **Docker :** il n’a pas accès au socket Docker. Ses commandes s’exécutent dans son propre conteneur.
+- **Réseau :** il n’est joint que par Traefik, et ne sort que vers les fournisseurs de modèles, Matrix et MCPHub.
+- **Tableau de bord :** il exige un identifiant et un mot de passe, et ne fait confiance aux en-têtes transmis (adresse et protocole du client) que depuis le réseau de Traefik.
 
 Le coffre `vault/assistant/vault.yml` (créé avec `mise vault:create`) contient :
 
-- `assistant_gateway_token` (`openssl rand -hex 32`), le jeton à saisir dans l’interface ;
-- `assistant_environment`, facultatif : les variables passées au conteneur, comme les clés des fournisseurs ou `TELEGRAM_BOT_TOKEN`. Leurs valeurs se limitent aux lettres, aux chiffres et à `._~:/+=@,-`, car Compose interpréterait `$` et les guillemets.
+- `assistant_dashboard_password` (au moins 20 caractères), le mot de passe du tableau de bord, pour l’utilisateur `alix` ;
+- `assistant_dashboard_secret` (`openssl rand -hex 32`), qui signe les sessions pour qu’elles survivent aux redémarrages ;
+- `assistant_environment`, facultatif : les variables passées au conteneur, comme les clés des fournisseurs ou la connexion à Matrix (`MATRIX_HOMESERVER`, `MATRIX_USER_ID`, `MATRIX_ACCESS_TOKEN`, `MATRIX_ALLOWED_USERS`). Leurs valeurs se limitent aux lettres, aux chiffres et à `._~:/+=@!,-`, car Compose interpréterait `$` et les guillemets.
 
-Après le premier déploiement (`mise deploy services/assistant/deploy.yml`), la configuration initiale choisit le modèle et les messageries :
+Après le premier déploiement (`mise deploy services/assistant/deploy.yml`), le modèle et MCPHub se règlent dans le conteneur :
 
 ```bash
-docker exec -it assistant node dist/index.js onboard
+docker exec -it assistant hermes auth add openai-codex   # abonnement ChatGPT, par un code à saisir
+docker exec -it assistant hermes config edit             # MCPHub, voir ci-dessous
+docker exec -it assistant hermes mcp login mcphub
 ```
 
-Elle peut modifier les réglages de la passerelle ; le redémarrage suivant les rétablit. Luxembourg n’est pas encore sauvegardé : le dossier `home` non plus.
+MCPHub s’ajoute dans `mcp_servers` ; Luxembourg l’atteint par le VPN, comme Vigie atteint Bruxelles :
 
-La CI (`.github/scripts/check-assistant.sh`) démarre OpenClaw avec ces réglages et vérifie qu’il les applique, qu’il tourne sans droits d’écriture sur sa racine, et qu’il refuse un mauvais jeton.
+```yaml
+mcp_servers:
+  mcphub:
+    url: https://mcphub.anneraud.fr/mcp
+    auth: oauth
+```
+
+T3 Code parle à Hermes par [ACP](https://agentclientprotocol.com/) : il lance la commande `hermes acp` et échange avec elle sur son entrée et sa sortie (**Settings → Providers → Local ACP command**). Cette commande tourne là où tourne T3 Code ; un Hermes installé sur le poste a donc sa propre mémoire, distincte de celle de Luxembourg.
+
+Luxembourg n’est pas encore sauvegardé : le dossier `data` non plus.
+
+La CI (`.github/scripts/check-assistant.sh`) démarre Hermes avec ces réglages et vérifie qu’il tourne avec ses seules capacités, que la passerelle et le tableau de bord ne tournent pas en root, que le réseau de Traefik est approuvé une seule fois, et que le tableau de bord refuse un mauvais mot de passe.
 
 ## 💻 Postes de travail {#postes}
 
