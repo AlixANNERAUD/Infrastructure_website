@@ -49,6 +49,14 @@ flowchart LR
 
 [NetBird](https://netbird.io/) relie les appareils et les serveurs dans un réseau maillé chiffré (WireGuard). Son serveur de gestion, de signalisation et de relais tourne sur Luxembourg, joignable publiquement pour que les appareils puissent s’y connecter ; il a son propre fournisseur d’identité intégré. Une fois connecté, un appareil atteint les services privés des deux hôtes comme s’il était sur le réseau local. Les serveurs l’utilisent aussi entre eux, par exemple pour la supervision de Bruxelles depuis Luxembourg. La plage d’adresses du VPN est donnée dans la page [Réseau](reseau.md#vpn-mesh-netbird).
 
+Son déploiement est dans <RepositoryReference path="services/maillage" />. Sa configuration (groupes, politiques d’accès, réseaux et routes, nœuds de sortie, DNS, clés d’installation) est décrite dans <RepositoryReference path="opentofu/netbird" /> et appliquée par OpenTofu : elle se modifie dans le code, jamais dans la console. La connexion par Zitadel s’y ajoute aux comptes locaux de NetBird ; son application est déclarée avec les autres (voir ci-dessous). Depuis le poste de l’administrateur :
+
+```bash
+mise deploy services/maillage/configuration.yml
+```
+
+Le coffre `vault/maillage/vault.yml` contient le jeton d’un utilisateur de service NetBird administrateur (`netbird_automation_token`) et la phrase de passe de l’état chiffré d’OpenTofu (`netbird_state_passphrase`) ; l’état lui-même est dans `vault/maillage/opentofu.tfstate`.
+
 ### 💬 Fédération Matrix {#matrix}
 
 Le serveur Matrix (Synapse) de `anneraud.fr` tourne sur Bruxelles. Les identifiants sont de la forme `@nom:anneraud.fr` : le domaine nu `anneraud.fr` publie la délégation Matrix (`/.well-known/matrix`) et transmet les requêtes de fédération à Synapse, sur le port 443 ; le reste du domaine nu redirige vers `www.anneraud.fr`. L’API d’administration de Synapse n’est accessible que depuis le réseau local ou le VPN.
