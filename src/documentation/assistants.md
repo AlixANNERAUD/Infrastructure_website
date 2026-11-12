@@ -11,8 +11,9 @@ flowchart LR
 	end
 	subgraph Luxembourg
 		Grafana[Serveur MCP de Grafana] --> Vigie[Métriques et journaux de Vigie]
-		Hermes[Hermes Agent]
+		Hermes[Hermes Agent, un par personne]
 	end
+	Hermes --"MCP, OAuth"--> T3[T3 Code sur les postes]
 	MCPHub --"jeton dédié"--> Grafana
 	Hermes --"OAuth, par le VPN"--> MCPHub
 ```
@@ -28,31 +29,39 @@ MCPHub (<RepositoryReference path="services/mcphub" />) tourne sur Bruxelles, à
 
 Le coffre `vault/mcphub/vault.yml` (créé avec `mise vault:create`) contient `mcphub_database_password`, `mcphub_jwt_secret`, `mcphub_better_auth_secret` (`openssl rand -hex 32` chacun) et `mcphub_admin_password`, utilisé seulement à la création du premier utilisateur. Le déploiement (`mise deploy services/mcphub/deploy.yml`) provisionne aussi l’application Zitadel, d’où le besoin d’OpenTofu.
 
-## ⚕️ Assistant personnel {#hermes}
+## ⚕️ Assistants personnels {#hermes}
 
-[Hermes Agent](https://hermes-agent.nousresearch.com/) (<RepositoryReference path="services/assistant" />) tourne sur Luxembourg. Son tableau de bord est à l’adresse `assistant.anneraud.fr`, accessible uniquement depuis le réseau local ou le VPN. Contrairement aux assistants des postes de travail, il agit seul : il exécute des commandes, lit le web, répond sur Matrix et écrit ses propres compétences à partir de ce qu’il a fait. Une page ou un message peut donc tenter de le détourner (injection de prompt), d’où son isolement :
+[Hermes Agent](https://hermes-agent.nousresearch.com/) (<RepositoryReference path="services/assistant" />) tourne sur Luxembourg, une instance par personne. Le tableau de bord de chacune a sa propre adresse (`assistant.anneraud.fr` pour l’administrateur), accessible uniquement depuis le réseau local ou le VPN. Contrairement aux assistants des postes de travail, Hermes agit seul : il exécute des commandes, lit le web, répond sur Matrix, délègue du code aux machines T3 Code et écrit ses propres compétences à partir de ce qu’il a fait. Une page ou un message peut donc tenter de le détourner (injection de prompt), d’où son isolement :
 
-- **Conteneur :** son image démarre en root pour confier son dossier à l’utilisateur 2000, qui n’a pas de compte sur l’hôte, puis fait tourner la passerelle et le tableau de bord sous cet utilisateur. Il ne garde que les capacités Linux nécessaires à ce passage, avec 2 Go de mémoire et 512 processus au plus.
-- **Données :** il ne voit que son dossier, `/opt/assistant/data` : configuration, identifiants, mémoire, compétences et sessions.
-- **Docker :** il n’a pas accès au socket Docker. Ses commandes s’exécutent dans son propre conteneur.
-- **Réseau :** il n’est joint que par Traefik, et ne sort que vers les fournisseurs de modèles, Matrix et MCPHub.
+- **Une pile par personne :** chacune a son conteneur, son dossier (`/opt/<nom>/data` : configuration, identifiants, mémoire, compétences, sessions), son utilisateur Linux sans compte sur l’hôte et son bot Matrix. Un assistant ne lit pas les fichiers d’un autre.
+- **Conteneur :** l’image démarre en root pour confier le dossier à cet utilisateur, puis fait tourner la passerelle et le tableau de bord sous son identité. Elle ne garde que les capacités Linux nécessaires à ce passage, avec 2 Go de mémoire et 512 processus au plus, et n’a pas accès au socket Docker.
+- **Réseau :** chaque instance n’est jointe que par Traefik, et ne sort que vers les fournisseurs de modèles, Matrix, MCPHub et T3 Code.
 - **Tableau de bord :** il exige un identifiant et un mot de passe, et ne fait confiance aux en-têtes transmis (adresse et protocole du client) que depuis le réseau de Traefik.
 
-Le coffre `vault/assistant/vault.yml` (créé avec `mise vault:create`) contient :
+Les personnes sont listées dans le coffre `vault/assistant/vault.yml` (créé avec `mise vault:create`), pas dans le dépôt, qui est public :
 
-- `assistant_dashboard_password` (au moins 20 caractères), le mot de passe du tableau de bord, pour l’utilisateur `alix` ;
-- `assistant_dashboard_secret` (`openssl rand -hex 32`), qui signe les sessions pour qu’elles survivent aux redémarrages ;
-- `assistant_environment`, facultatif : les variables passées au conteneur, comme les clés des fournisseurs ou la connexion à Matrix (`MATRIX_HOMESERVER`, `MATRIX_USER_ID`, `MATRIX_ACCESS_TOKEN`, `MATRIX_ALLOWED_USERS`). Leurs valeurs se limitent aux lettres, aux chiffres et à `._~:/+=@!,-`, car Compose interpréterait `$` et les guillemets.
+```yaml
+assistant_instances:
+  - name: assistant # conteneur et dossier : assistant ou assistant-<mot>
+    host: assistant.anneraud.fr # adresse du tableau de bord
+    user: 2000 # utilisateur Linux, différent pour chaque personne
+    dashboard_username: alix
+    dashboard_password: "…" # au moins 20 caractères
+    dashboard_secret: "…" # openssl rand -hex 32 : signe les sessions
+    environment: # facultatif : clés de fournisseurs, connexion à Matrix
+      MATRIX_HOMESERVER: "https://…"
+      MATRIX_USER_ID: "@assistant:…"
+      MATRIX_ACCESS_TOKEN: "…"
+      MATRIX_ALLOWED_USERS: "@alix:…"
+```
 
-Après le premier déploiement (`mise deploy services/assistant/deploy.yml`), le modèle et MCPHub se règlent dans le conteneur :
+Les valeurs se limitent aux lettres, aux chiffres et à `._~:/+=@!,-`, car Compose interpréterait `$` et les guillemets. Après le déploiement (`mise deploy services/assistant/deploy.yml`), le modèle et les serveurs MCP se règlent dans chaque conteneur :
 
 ```bash
 docker exec -it assistant hermes auth add openai-codex   # abonnement ChatGPT, par un code à saisir
-docker exec -it assistant hermes config edit             # MCPHub, voir ci-dessous
+docker exec -it assistant hermes config edit             # mcp_servers, voir ci-dessous
 docker exec -it assistant hermes mcp login mcphub
 ```
-
-MCPHub s’ajoute dans `mcp_servers` ; Luxembourg l’atteint par le VPN, comme Vigie atteint Bruxelles :
 
 ```yaml
 mcp_servers:
@@ -61,9 +70,9 @@ mcp_servers:
     auth: oauth
 ```
 
-T3 Code parle à Hermes par [ACP](https://agentclientprotocol.com/) : il lance la commande `hermes acp` et échange avec elle sur son entrée et sa sortie (**Settings → Providers → Local ACP command**). Cette commande tourne là où tourne T3 Code ; un Hermes installé sur le poste a donc sa propre mémoire, distincte de celle de Luxembourg.
+MCPHub lui donne les outils de l’infrastructure (GitHub, Paperless…) ; Luxembourg l’atteint par le VPN, comme Vigie atteint Bruxelles. Chaque machine T3 Code expose aussi un serveur MCP (`https://<adresse>/mcp`, connexion OAuth en mode **Supervised**) : Hermes y lance et suit des threads (`t3_thread_launch`, `t3_thread_wait`), qui travaillent sur les dépôts de la machine. Ces adresses doivent être en `https` ; leur publication sur le VPN reste à faire.
 
-Luxembourg n’est pas encore sauvegardé : le dossier `data` non plus.
+Luxembourg n’est pas encore sauvegardé : les dossiers `data` non plus.
 
 La CI (`.github/scripts/check-assistant.sh`) démarre Hermes avec ces réglages et vérifie qu’il tourne avec ses seules capacités, que la passerelle et le tableau de bord ne tournent pas en root, que le réseau de Traefik est approuvé une seule fois, et que le tableau de bord refuse un mauvais mot de passe.
 
