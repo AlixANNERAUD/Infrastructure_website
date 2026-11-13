@@ -64,7 +64,7 @@ mise deploy hosts/bootstrap.yml --limit <hôte> -u <vous> --ask-become-pass    #
 
 Le playbook durcit aussi `sshd`. Il refuse de s’exécuter si la connexion en cours ne vient pas d’un réseau autorisé ; quand un hôte est injoignable, ou que `sudo` demande un mot de passe, il affiche les commandes à lancer à la main sur cet hôte et passe au suivant.
 
-- **TrueNAS (Bruxelles)** gère ses utilisateurs et son `sshd` dans son interface, qui annulerait des changements faits en SSH : le playbook ne fait que vérifier (hôte joignable, chaque clé avec sa restriction `from=`, `sudo` sans mot de passe, connexion par mot de passe désactivée) et indique quoi changer dans l’interface. Les clés des contrôleurs, qui se connectent depuis des conteneurs du réseau `proxy`, y sont aussi acceptées depuis le sous-réseau actuel de ce réseau.
+- **TrueNAS (Bruxelles)** gère ses utilisateurs et son `sshd` dans son interface, qui annulerait des changements faits en SSH : le playbook ne fait que vérifier (hôte joignable, chaque clé avec sa restriction `from=`, `sudo` sans mot de passe, connexion par mot de passe désactivée) et indique quoi changer dans l’interface. Les clés des contrôleurs, qui se connectent depuis le conteneur de Semaphore, y sont aussi acceptées depuis le sous-réseau actuel de son réseau proxy (`proxy-deploiement`).
 - **Changer la clé du portable :** en générer une nouvelle (`ssh-keygen -t ed25519-sk` pour une clé matérielle), remplacer `automation_laptop_public_key` par sa clé publique, puis lancer `mise deploy hosts/bootstrap.yml` sur chaque hôte avec l’ancienne clé, et mettre à jour la ligne des clés autorisées de TrueNAS qu’il affiche.
 
 ## ✅ Intégration continue {#integration-continue}
@@ -119,7 +119,7 @@ Chaque image Docker est figée sur une version exacte : jamais `latest`, jamais 
 Une fois, pour autoriser Semaphore sur les hôtes :
 
 1. Ajouter la clé publique affichée à `automation_additional_public_keys`, puis lancer `mise deploy hosts/bootstrap.yml`.
-2. Sur TrueNAS, ajouter la même clé aux clés autorisées du compte `ansible` (le playbook affiche les lignes exactes). Si le réseau `proxy` de Bruxelles est un jour recréé, relancer `mise deploy hosts/bootstrap.yml --limit bruxelles` et mettre à jour cette ligne.
+2. Sur TrueNAS, ajouter la même clé aux clés autorisées du compte `ansible` (le playbook affiche les lignes exactes). Si le réseau `proxy-deploiement` de Bruxelles est un jour recréé, relancer `mise deploy hosts/bootstrap.yml --limit bruxelles` et mettre à jour cette ligne.
 
 Une fois, dans l’interface de Semaphore :
 

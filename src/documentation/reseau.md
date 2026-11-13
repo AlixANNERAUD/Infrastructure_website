@@ -55,46 +55,39 @@ NetBird utilise `100.64.0.0/16` (hôtes `100.64.0.1`–`100.64.254.254`), indép
 
 ## 🐳 Réseaux Docker {#reseaux-docker}
 
-Docker attribue un sous-réseau à chaque réseau créé sans sous-réseau explicite, à partir de ses _pools d’adresses_. Le plan découpe la plage privée `172.16.0.0/12` ([RFC 1918](https://www.rfc-editor.org/rfc/rfc1918)) en deux moitiés, identiques sur Bruxelles et Luxembourg :
+Docker attribue un sous-réseau à chaque réseau créé sans sous-réseau explicite, à partir de ses _pools d’adresses_. Aucun réseau de l’infrastructure n’a de sous-réseau fixe : tous viennent de ces pools, dans la plage privée `172.16.0.0/12` ([RFC 1918](https://www.rfc-editor.org/rfc/rfc1918)).
 
-| Plage                               | Usage                                                                            | Taille des réseaux | Capacité                        |
-| ----------------------------------- | -------------------------------------------------------------------------------- | ------------------ | ------------------------------- |
-| `172.16.0.0/13` (`172.16`–`172.23`) | Pool automatique de Docker : réseaux internes des applications, bases de données | `/24`              | 2 048 réseaux de 253 conteneurs |
-| `172.24.0.0/13` (`172.24`–`172.31`) | Réservé aux sous-réseaux fixes, jamais attribué automatiquement                  | —                  | —                               |
-| ↳ `172.24.0.0/22`                   | Réseaux proxy de Luxembourg _(prévu)_                                            | `/29`              | 128 réseaux de 5 conteneurs     |
-| ↳ `172.24.4.0/22`                   | Réseaux proxy de Bruxelles _(prévu)_                                             | `/29`              | 128 réseaux de 5 conteneurs     |
-| `fdd0::/48`                         | Pool IPv6, pour les réseaux qui activent IPv6                                    | `/64`              | 65 536 réseaux                  |
+| Hôte       | Pool                                                     | Où il se règle                                                                  |
+| ---------- | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Bruxelles  | `172.16.0.0/13` en `/24`, et `fdd0::/48` en `/64` (IPv6) | Interface TrueNAS : Apps → Installed → Configuration → Settings → Address Pools |
+| Luxembourg | `172.16.0.0/12` en `/24`                                 | `default-address-pools` dans `/etc/docker/daemon.json`, écrit à la main         |
 
-| Hôte       | Où se règle le pool                                                                |
-| ---------- | ---------------------------------------------------------------------------------- |
-| Bruxelles  | Interface TrueNAS : Apps → Installed → Configuration → Settings → Address Pools    |
-| Luxembourg | `default-address-pools` dans `/etc/docker/daemon.json`, géré par Ansible _(prévu)_ |
+La taille `/24` est la valeur courante ([Docker](https://docs.docker.com/engine/network/), défaut TrueNAS). L’alignement de Luxembourg sur Bruxelles figure dans la [feuille de route](feuille-de-route.md#reseaux).
 
-L’alignement des deux hôtes sur ce plan figure dans la [feuille de route](feuille-de-route.md#reseaux).
-
-> **Pourquoi `/29` :** Docker réserve l’adresse de réseau et celle de broadcast ([Moby](https://git.causa-arcana.com/kotovalexarian-likes-github/moby--moby/commit/3a938df4b570aad3bfb4d5342379582e872fc1a3)), et la passerelle occupe une adresse sur le pont ([Docker](https://docs.docker.com/engine/network/drivers/bridge/)). Il reste 5 adresses : Traefik et jusqu’à 4 conteneurs de l’application. Un `/30` n’en laisserait qu’une.
->
-> **Pourquoi une plage réservée :** Docker ne permet pas de choisir le pool d’un réseau, et un sous-réseau fixe ne doit chevaucher aucun réseau existant, sinon la création échoue ([Docker](https://docs.docker.com/reference/cli/docker/network/create/)). Les sous-réseaux fixes vivent donc hors du pool automatique. La taille `/24` du pool automatique est la valeur courante ([Docker](https://docs.docker.com/engine/network/), défaut TrueNAS) ; le découpage en deux moitiés est propre à cette infrastructure.
-
-### 🧱 Isolation des applications _(prévu)_ {#isolation-des-applications}
+### 🧱 Isolation des applications {#isolation-des-applications}
 
 Sur un même réseau Docker, les conteneurs voient tous les ports les uns des autres ([Docker](https://docs.docker.com/engine/network/drivers/bridge/)). Un réseau proxy partagé par toutes les applications permettrait donc à une application compromise de joindre les autres sans passer par Traefik ni par ses protections (liste d’accès interne, CrowdSec, limitation des connexions).
 
-Cible : un réseau `/29` par application, partagé uniquement par Traefik et le conteneur qu’il dessert, comme le recommande l’[OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html) (règle n° 5). Chaque application reçoit un numéro d’emplacement fixe dans l’inventaire, jamais réutilisé, dont Ansible déduit le sous-réseau. Ces réseaux sont marqués `internal` (aucune sortie vers Internet) ; les bases de données restent sur le réseau interne de l’application. Les applications qui font confiance aux en-têtes transmis par le proxy ne font plus confiance qu’à leur propre réseau `/29`.
+Chaque application a donc son propre réseau proxy, `proxy-<application>`, partagé uniquement par Traefik et le conteneur qu’il dessert, comme le recommande l’[OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html) (règle n° 5) :
+
+- **Sous-réseau :** pris dans le pool automatique, comme tous les réseaux. Les applications qui font confiance aux en-têtes transmis par le proxy (Hermes, NetBird) lisent ce sous-réseau au déploiement et ne font confiance qu’à lui.
+- **Sortie :** le réseau proxy n’est pas `internal`, l’application sort sur Internet par lui. Les bases de données restent sur le réseau interne de leur application, que Traefik ne rejoint pas.
+- **Traefik :** chaque déploiement d’application crée son réseau et y relie Traefik à chaud, sans le redémarrer. Ces réseaux portent l’étiquette `anneraud.proxy=true` : quand Traefik est recréé, son propre déploiement le relie de nouveau à tous. Chaque conteneur routé indique son réseau (`traefik.docker.network`) et son port, et la CI le vérifie.
+- **Métriques :** Vigie lit les métriques de Traefik sur un réseau interne qui ne relie qu’eux deux, `traefik-metrics`, et celles de Gatus sur le réseau interne des collecteurs, `metriques`.
 
 ```mermaid
 flowchart LR
 	Internet@{ shape: cloud } --> Traefik
 
-	subgraph P1["proxy-nextcloud · 172.24.4.0/29"]
+	subgraph P1["proxy-nextcloud"]
 		Nextcloud
 	end
 
-	subgraph P2["proxy-jellyfin · 172.24.4.8/29"]
+	subgraph P2["proxy-jellyfin"]
 		Jellyfin
 	end
 
-	subgraph I1["Réseau interne · pool automatique"]
+	subgraph I1["Réseau interne de Nextcloud"]
 		BaseNextcloud[(Base de données)]
 	end
 
@@ -103,4 +96,19 @@ flowchart LR
 	Nextcloud --> BaseNextcloud
 ```
 
-> Nextcloud et Jellyfin ne partagent aucun réseau : ils ne peuvent pas se joindre directement. Les noms et emplacements du schéma sont des exemples. Traefik reste relié à tous les réseaux proxy : sa compromission donnerait toujours accès à toutes les applications.
+> Nextcloud et Jellyfin ne partagent aucun réseau : ils ne peuvent pas se joindre directement. Traefik reste relié à tous les réseaux proxy : sa compromission donnerait toujours accès à toutes les applications.
+
+**Applications qui s’appellent entre elles.** Quelques applications de Bruxelles se joignent par leur nom de conteneur. Elles partagent un réseau `liaison-<usage>`, `internal` et sans Traefik, déclaré dans <RepositoryReference path="inventory/host_vars/bruxelles/applications.yml" /> :
+
+| Réseau                   | Applications                                                                           |
+| ------------------------ | -------------------------------------------------------------------------------------- |
+| `liaison-telechargement` | qBittorrent (gluetun), Prowlarr, FlareSolverr, Radarr, Sonarr, Bazarr, Seerr, Jellyfin |
+| `liaison-recherche`      | Open WebUI, SearXNG                                                                    |
+| `liaison-automatisation` | MCPHub, n8n                                                                            |
+
+**Applications TrueNAS.** Leur compose appartient à TrueNAS : le déploiement de Traefik (<RepositoryReference path="services/proxy/deploy.yml" />) crée leurs réseaux, nommés par le champ `network` de chaque route de <RepositoryReference path="inventory/host_vars/bruxelles/traefik.yml" />, ainsi que les réseaux de liaison. Chaque application les rejoint dans ses réglages TrueNAS. Pour une nouvelle application :
+
+1. Ajouter sa route avec `network: proxy-<application>` (le nom de l’application TrueNAS), puis déployer Traefik : `mise deploy services/proxy/deploy.yml --limit bruxelles`.
+2. Dans TrueNAS, réglages de l’application, réseau : rejoindre `proxy-<application>` (et son réseau `liaison-…` si elle en a un), jamais le réseau partagé `proxy`.
+
+Le réseau partagé `proxy` (`traefik` sur Luxembourg) ne reste que le temps de basculer les applications TrueNAS ; il disparaît ensuite, avec l’option qui en fait le réseau par défaut de Traefik.
