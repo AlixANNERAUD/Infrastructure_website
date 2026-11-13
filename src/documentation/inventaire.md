@@ -8,7 +8,7 @@ Cette page liste le matériel : serveurs, équipements réseau, périphériques 
 
 Ce serveur, installé sur le site principal, héberge la majorité des services. TrueNAS Apps et Ansible sont utilisés pour le déploiement et la gestion. Il a été conçu dans une logique d’efficacité énergétique (~20 W au repos) et de fiabilité.
 
-Home Assistant y fonctionne dans un conteneur Docker connecté au réseau local via macvlan.
+Home Assistant y fonctionne dans un conteneur Docker (<RepositoryReference path="services/maison" />, avec sa base de données et HA-Linky), joint par Traefik sur son réseau proxy et doté de sa propre adresse sur le réseau local (macvlan) pour découvrir les appareils. Ses réglages HTTP et de base de données sont dans le paquet `packages/infrastructure.yaml` de sa configuration, écrit par le déploiement.
 
 - Système d’exploitation : [TrueNAS Community Edition](https://www.truenas.com/truenas-community-edition/) (basé sur Debian)
 - Carte mère : ASRock B550M-ITX/ac (format Mini-ITX, socket AM4)

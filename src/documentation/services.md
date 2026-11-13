@@ -6,29 +6,28 @@ Ajouter un service au dépôt, c’est lui ajouter une ligne ici et une vérific
 
 ## 🙋 Au quotidien {#quotidien}
 
-| Service                                                         | Rôle                                          | Accès   | Hôte       | Déploiement  |
-| --------------------------------------------------------------- | --------------------------------------------- | ------- | ---------- | ------------ |
-| [Accueil](https://www.anneraud.fr/)                             | Ce site                                       | Public  | —          | GitHub Pages |
-| [Nuage](https://nuage.anneraud.fr/)                             | Fichiers, agendas, contacts (Nextcloud)       | Public  | Bruxelles  | TrueNAS Apps |
-| [Collabora](https://collabora.anneraud.fr/)                     | Suite bureautique en ligne, pour Nextcloud    | Public  | Bruxelles  | TrueNAS Apps |
-| [Bitwarden](https://bitwarden.anneraud.fr/)                     | Gestionnaire de mots de passe (Vaultwarden)   | Public  | Bruxelles  | TrueNAS Apps |
-| [Archive](https://archive.anneraud.fr/)                         | Documents numérisés (Paperless-ngx)           | Privé   | Bruxelles  | TrueNAS Apps |
-| [Bichon](https://archive-courriel.anneraud.fr/)                 | Archive des courriels                         | Privé   | Bruxelles  | TrueNAS Apps |
-| [Maison](https://maison.anneraud.fr/)                           | Domotique (Home Assistant)                    | Public  | Bruxelles  | TrueNAS Apps |
-| HA-Linky                                                        | Relevés du compteur Linky pour Home Assistant | Interne | Bruxelles  | Ansible      |
-| [Matrix](https://matrix.anneraud.fr/)                           | Messagerie (Synapse, `@nom:anneraud.fr`)      | Public  | Bruxelles  | Ansible      |
-| [Notes](https://notes.anneraud.fr/)                             | Documentation partagée (Docmost)              | Public  | Bruxelles  | Ansible      |
-| [Recettes](https://recettes.anneraud.fr/)                       | Recettes de cuisine (Mealie)                  | Privé   | Bruxelles  | TrueNAS Apps |
-| [Finances](https://finances.anneraud.fr/)                       | Finances personnelles (Firefly III)           | Privé   | Bruxelles  | TrueNAS Apps |
-| [Importateur finances](https://importeur-finances.anneraud.fr/) | Import des relevés dans Firefly III           | Privé   | Bruxelles  | TrueNAS Apps |
-| [Discussion](https://discussion.anneraud.fr/)                   | Discussion avec des modèles d’IA (Open WebUI) | Privé   | Bruxelles  | TrueNAS Apps |
-| [Assistant](https://assistant.anneraud.fr/)                     | Assistant IA personnel (Hermes Agent)         | Privé   | Luxembourg | Ansible      |
-| [Recherche](https://recherche.anneraud.fr/)                     | Moteur de recherche (SearXNG)                 | Privé   | Bruxelles  | TrueNAS Apps |
-| [PDF](https://pdf.anneraud.fr/)                                 | Outils PDF (BentoPDF)                         | Privé   | Bruxelles  | TrueNAS Apps |
-| [Automatisation](https://automatisation.anneraud.fr/)           | Flux automatisés (n8n)                        | Privé   | Bruxelles  | TrueNAS Apps |
-| [Git](https://git.anneraud.fr/)                                 | Forge Git et miroirs de GitHub (Gitea)        | Privé   | Bruxelles  | TrueNAS Apps |
-| [Wakapi](https://wakapi.anneraud.fr/)                           | Temps passé à coder                           | Public  | Bruxelles  | Ansible      |
-| [Statistiques](https://s.anneraud.fr/)                          | Statistiques de visite des sites (Umami)      | Public  | Bruxelles  | TrueNAS Apps |
+| Service                                                         | Rôle                                          | Accès  | Hôte       | Déploiement  |
+| --------------------------------------------------------------- | --------------------------------------------- | ------ | ---------- | ------------ |
+| [Accueil](https://www.anneraud.fr/)                             | Ce site                                       | Public | —          | GitHub Pages |
+| [Nuage](https://nuage.anneraud.fr/)                             | Fichiers, agendas, contacts (Nextcloud)       | Public | Bruxelles  | TrueNAS Apps |
+| [Collabora](https://collabora.anneraud.fr/)                     | Suite bureautique en ligne, pour Nextcloud    | Public | Bruxelles  | TrueNAS Apps |
+| [Bitwarden](https://bitwarden.anneraud.fr/)                     | Gestionnaire de mots de passe (Vaultwarden)   | Public | Bruxelles  | TrueNAS Apps |
+| [Archive](https://archive.anneraud.fr/)                         | Documents numérisés (Paperless-ngx)           | Privé  | Bruxelles  | TrueNAS Apps |
+| [Bichon](https://archive-courriel.anneraud.fr/)                 | Archive des courriels                         | Privé  | Bruxelles  | TrueNAS Apps |
+| [Maison](https://maison.anneraud.fr/)                           | Domotique (Home Assistant, relevés Linky)     | Public | Bruxelles  | Ansible      |
+| [Matrix](https://matrix.anneraud.fr/)                           | Messagerie (Synapse, `@nom:anneraud.fr`)      | Public | Bruxelles  | Ansible      |
+| [Notes](https://notes.anneraud.fr/)                             | Documentation partagée (Docmost)              | Public | Bruxelles  | Ansible      |
+| [Recettes](https://recettes.anneraud.fr/)                       | Recettes de cuisine (Mealie)                  | Privé  | Bruxelles  | TrueNAS Apps |
+| [Finances](https://finances.anneraud.fr/)                       | Finances personnelles (Firefly III)           | Privé  | Bruxelles  | TrueNAS Apps |
+| [Importateur finances](https://importeur-finances.anneraud.fr/) | Import des relevés dans Firefly III           | Privé  | Bruxelles  | TrueNAS Apps |
+| [Discussion](https://discussion.anneraud.fr/)                   | Discussion avec des modèles d’IA (Open WebUI) | Privé  | Bruxelles  | TrueNAS Apps |
+| [Assistant](https://assistant.anneraud.fr/)                     | Assistant IA personnel (Hermes Agent)         | Privé  | Luxembourg | Ansible      |
+| [Recherche](https://recherche.anneraud.fr/)                     | Moteur de recherche (SearXNG)                 | Privé  | Bruxelles  | TrueNAS Apps |
+| [PDF](https://pdf.anneraud.fr/)                                 | Outils PDF (BentoPDF)                         | Privé  | Bruxelles  | TrueNAS Apps |
+| [Automatisation](https://automatisation.anneraud.fr/)           | Flux automatisés (n8n)                        | Privé  | Bruxelles  | TrueNAS Apps |
+| [Git](https://git.anneraud.fr/)                                 | Forge Git et miroirs de GitHub (Gitea)        | Privé  | Bruxelles  | TrueNAS Apps |
+| [Wakapi](https://wakapi.anneraud.fr/)                           | Temps passé à coder                           | Public | Bruxelles  | Ansible      |
+| [Statistiques](https://s.anneraud.fr/)                          | Statistiques de visite des sites (Umami)      | Public | Bruxelles  | TrueNAS Apps |
 
 ## 🎬 Médias {#medias}
 
