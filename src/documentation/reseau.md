@@ -100,11 +100,12 @@ flowchart LR
 
 **Applications qui s’appellent entre elles.** Quelques applications de Bruxelles se joignent par leur nom de conteneur. Elles partagent un réseau `liaison-<usage>`, `internal` et sans Traefik, déclaré dans <RepositoryReference path="inventory/host_vars/bruxelles/applications.yml" /> :
 
-| Réseau                   | Applications                                                                           |
-| ------------------------ | -------------------------------------------------------------------------------------- |
-| `liaison-telechargement` | qBittorrent (gluetun), Prowlarr, FlareSolverr, Radarr, Sonarr, Bazarr, Seerr, Jellyfin |
-| `liaison-recherche`      | Open WebUI, SearXNG                                                                    |
-| `liaison-automatisation` | MCPHub, n8n                                                                            |
+| Réseau                   | Applications                                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------------------- |
+| `liaison-telechargement` | qBittorrent (gluetun), Prowlarr, FlareSolverr, Radarr, Sonarr, Bazarr, Seerr, Jellyfin             |
+| `liaison-recherche`      | Open WebUI, SearXNG                                                                                |
+| `liaison-automatisation` | MCPHub, n8n                                                                                        |
+| `sortie-flaresolverr`    | FlareSolverr seul : sa sortie vers Internet, faute de réseau proxy (pas de route) ; non `internal` |
 
 **Applications TrueNAS.** Leur compose appartient à TrueNAS : le déploiement de Traefik (<RepositoryReference path="services/proxy/deploy.yml" />) crée leurs réseaux, nommés par le champ `network` de chaque route de <RepositoryReference path="inventory/host_vars/bruxelles/traefik.yml" />, ainsi que les réseaux de liaison. Chaque application les rejoint dans ses réglages TrueNAS. Pour une nouvelle application :
 
