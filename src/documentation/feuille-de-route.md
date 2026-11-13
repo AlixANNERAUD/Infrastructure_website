@@ -6,9 +6,8 @@
 
 ### 🐳 Réseaux Docker {#reseaux}
 
-1. **Basculer les applications TrueNAS sur leur réseau proxy** : chacune rejoint `proxy-<application>` (et son réseau de liaison) dans ses réglages, puis le réseau partagé `proxy` est retiré de Traefik et supprimé, comme `traefik` sur Luxembourg. Voir [Réseau](reseau.md#isolation-des-applications).
-2. **Aligner le pool d’adresses de Luxembourg** sur celui de Bruxelles (`172.16.0.0/13` en `/24`, plus un pool IPv6), géré par Ansible.
-3. **Un réseau par base de données**, à la place du réseau partagé avec l’outil de sauvegarde des bases (Databasus) : l’outil rejoint chaque réseau, mais les bases ne se voient plus entre elles.
+1. **Aligner le pool d’adresses de Luxembourg** sur celui de Bruxelles (`172.16.0.0/13` en `/24`, plus un pool IPv6), géré par Ansible.
+2. **Un réseau par base de données**, à la place du réseau partagé avec l’outil de sauvegarde des bases (Databasus) : l’outil rejoint chaque réseau, mais les bases ne se voient plus entre elles.
 
 ### 💾 Sauvegardes et dépôts {#sauvegardes}
 

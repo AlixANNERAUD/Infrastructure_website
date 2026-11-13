@@ -110,6 +110,6 @@ flowchart LR
 **Applications TrueNAS.** Leur compose appartient à TrueNAS : le déploiement de Traefik (<RepositoryReference path="services/proxy/deploy.yml" />) crée leurs réseaux, nommés par le champ `network` de chaque route de <RepositoryReference path="inventory/host_vars/bruxelles/traefik.yml" />, ainsi que les réseaux de liaison. Chaque application les rejoint dans ses réglages TrueNAS. Pour une nouvelle application :
 
 1. Ajouter sa route avec `network: proxy-<application>` (le nom de l’application TrueNAS), puis déployer Traefik : `mise deploy services/proxy/deploy.yml --limit bruxelles`.
-2. Dans TrueNAS, réglages de l’application, réseau : rejoindre `proxy-<application>` (et son réseau `liaison-…` si elle en a un), jamais le réseau partagé `proxy`.
+2. Dans TrueNAS, réglages de l’application, réseau : rejoindre `proxy-<application>`, et son réseau `liaison-…` si elle en a un.
 
-Le réseau partagé `proxy` (`traefik` sur Luxembourg) ne reste que le temps de basculer les applications TrueNAS ; il disparaît ensuite, avec l’option qui en fait le réseau par défaut de Traefik.
+Il n’existe plus de réseau proxy partagé : Traefik n’a pas de réseau par défaut, chaque conteneur routé désigne le sien.

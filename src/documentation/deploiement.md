@@ -17,7 +17,7 @@ Cette page explique comment les services passent du [dépôt Infrastructure](htt
 
 Les dossiers et groupes portent le nom de la fonction du service (`authentification`, `deploiement`, `etat`…), pas celui du logiciel : remplacer un logiciel ne change pas l’organisation.
 
-L’inventaire associe chaque service à un hôte. Déplacer un service revient à changer son groupe dans <RepositoryReference path="inventory/hosts.yml" /> ; les faits propres à un hôte (dossier racine des services, réseau du proxy, noms DNS) sont dans ses variables d’hôte, jamais dans les playbooks.
+L’inventaire associe chaque service à un hôte. Déplacer un service revient à changer son groupe dans <RepositoryReference path="inventory/hosts.yml" /> ; les faits propres à un hôte (dossier racine des services, noms DNS) sont dans ses variables d’hôte, jamais dans les playbooks.
 
 ## 🧱 Rôle `compose_service` {#role-compose-service}
 
