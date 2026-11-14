@@ -40,7 +40,7 @@ zitadel_users:
     last_name: Anneraud
     owner: true # ORG_OWNER de l’organisation Anneraud
     temporary_password: true # écrit dans ~/.config/infrastructure/zitadel/alix.password, à changer à la première connexion
-    roles: { Vigie: [vigie-admin] }
+    roles: { Vigie: [vigie-admin], Maison: [maison] }
     service_accounts: { nextcloud: Alix ANNERAUD } # métadonnée nextcloud_account, pour relier un compte existant
   exemple:
     email: exemple@anneraud.fr # une redirection vers sa propre boîte
@@ -51,6 +51,7 @@ zitadel_users:
 - Un utilisateur sans `temporary_password` reçoit le courriel d’invitation de Zitadel.
 - L’un comme l’autre n’a lieu qu’à la création : ajouter `temporary_password` à un compte existant ne change rien ; le mot de passe se réinitialise alors depuis la console.
 - Les rôles d’un projet (`roles`) décident des droits dans le service correspondant, par exemple administrateur ou lecteur de la [supervision](supervision.md#connexion).
+- Pour un projet marqué `require_role` dans `applications.auto.tfvars`, Zitadel refuse la connexion à qui n’a aucun rôle sur ce projet : c’est le cas de Home Assistant (projet `Maison`, rôle `maison`), qui crée un compte à quiconque se connecte.
 
 ## 🔌 Raccorder un service {#raccorder}
 
@@ -90,11 +91,12 @@ Les autres entrées restent en place ; Paperless redémarre à l’enregistremen
 
 ## 🧩 Services raccordés {#services}
 
-| Service                 | Application Zitadel | Droits                                                      |
-| ----------------------- | ------------------- | ----------------------------------------------------------- |
-| Vigie (Grafana)         | `grafana`           | rôle `vigie-admin` : administrateur ; sinon lecteur         |
-| MCPHub                  | `mcphub`            | compte créé à la première connexion, à promouvoir à la main |
-| Paperless               | `paperless`         | compte Paperless existant, relié par l’utilisateur          |
-| Déploiement (Semaphore) | `deploiement`       | compte créé à la première connexion, à promouvoir à la main |
+| Service                 | Application Zitadel | Droits                                                                             |
+| ----------------------- | ------------------- | ---------------------------------------------------------------------------------- |
+| Vigie (Grafana)         | `grafana`           | rôle `vigie-admin` : administrateur ; sinon lecteur                                |
+| MCPHub                  | `mcphub`            | compte créé à la première connexion, à promouvoir à la main                        |
+| Paperless               | `paperless`         | compte Paperless existant, relié par l’utilisateur                                 |
+| Déploiement (Semaphore) | `deploiement`       | compte créé à la première connexion, à promouvoir à la main                        |
+| Home Assistant          | `maison`            | rôle `maison` requis ; compte créé à la première connexion, à promouvoir à la main |
 
 Chaque service garde son compte administrateur local en secours, en particulier Semaphore, qui déploie Zitadel lui-même.
